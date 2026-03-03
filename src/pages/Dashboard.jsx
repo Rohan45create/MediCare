@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -18,6 +18,20 @@ import { IconDownload, IconAlertTriangle, IconCircleCheckFilled, IconCircle, Ico
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
 const Dashboard = () => {
+    // Interactive Checklist State
+    const [checklist, setChecklist] = useState([
+        { id: 1, text: 'Morning Blood Pressure Reading', completed: true },
+        { id: 2, text: 'Insulin Dose (15 units)', completed: true },
+        { id: 3, text: 'Evening Fasting Measurement', completed: false },
+        { id: 4, text: '30-minute Moderate Walking', completed: false }
+    ]);
+
+    const toggleChecklistItem = (id) => {
+        setChecklist(checklist.map(item =>
+            item.id === id ? { ...item, completed: !item.completed } : item
+        ));
+    };
+
     // 1. Line Chart Data (HbA1c)
     const lineData = {
         labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'],
@@ -248,28 +262,26 @@ const Dashboard = () => {
                             <h4 className="font-bold text-slate-900 dark:text-white mb-4">Daily Checklist</h4>
 
                             <div className="space-y-4">
-                                <div className="flex items-center space-x-3 cursor-pointer group">
-                                    <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-600 text-white shrink-0">
-                                        <IconCircleCheckFilled size={16} className="text-white" />
+                                {checklist.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        onClick={() => toggleChecklistItem(item.id)}
+                                        className="flex items-center space-x-3 cursor-pointer group"
+                                    >
+                                        <div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors ${item.completed
+                                                ? 'bg-blue-600 border border-blue-600 text-white'
+                                                : 'border-2 border-slate-200 dark:border-slate-600 bg-transparent'
+                                            }`}>
+                                            {item.completed && <IconCircleCheckFilled size={16} className="text-white" />}
+                                        </div>
+                                        <span className={`text-sm font-medium transition-colors ${item.completed
+                                                ? 'text-slate-400 dark:text-slate-500 line-through'
+                                                : 'text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'
+                                            }`}>
+                                            {item.text}
+                                        </span>
                                     </div>
-                                    <span className="text-sm text-slate-600 dark:text-slate-300 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition">Morning Blood Pressure Reading</span>
-                                </div>
-                                <div className="flex items-center space-x-3 cursor-pointer group">
-                                    <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-600 text-white shrink-0">
-                                        <IconCircleCheckFilled size={16} className="text-white" />
-                                    </div>
-                                    <span className="text-sm text-slate-600 dark:text-slate-300 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition">Insulin Dose (15 units)</span>
-                                </div>
-                                <div className="flex items-center space-x-3 cursor-pointer group">
-                                    <div className="w-5 h-5 rounded flex items-center justify-center border-2 border-slate-200 dark:border-slate-600 shrink-0">
-                                    </div>
-                                    <span className="text-sm text-slate-500 dark:text-slate-400 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition">Evening Fasting Measurement</span>
-                                </div>
-                                <div className="flex items-center space-x-3 cursor-pointer group">
-                                    <div className="w-5 h-5 rounded flex items-center justify-center border-2 border-slate-200 dark:border-slate-600 shrink-0">
-                                    </div>
-                                    <span className="text-sm text-slate-500 dark:text-slate-400 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition">30-minute Moderate Walking</span>
-                                </div>
+                                ))}
                             </div>
                         </div>
 
