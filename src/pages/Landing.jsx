@@ -72,19 +72,19 @@ const Landing = () => {
             {/* Statistics Section */}
             <section className="bg-slate-50 dark:bg-[#0b1121] border-b border-t border-slate-200 dark:border-slate-800 py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
-                    <div className="pt-4 md:pt-0">
+                    <div className="pt-4 pb-10 md:pt-0">
                         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Active Users</p>
                         <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-1">50,000+</h3>
                         <p className="text-sm text-emerald-500 font-semibold">↗ +12% this month</p>
                     </div>
-                    <div className="pt-8 md:pt-0">
+                    <div className="pt-4 pb-10 md:pt-0">
                         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Accuracy Rate</p>
                         <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-1">99.9%</h3>
                         <p className="text-sm text-emerald-500 font-semibold flex items-center justify-center">
                             <IconShieldCheck size={14} className="mr-1" /> Clinical Grade AI
                         </p>
                     </div>
-                    <div className="pt-8 md:pt-0">
+                    <div className="pt-8 pb-10 md:pt-0">
                         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">Drugs Scanned</p>
                         <h3 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-1">1.2M+</h3>
                         <p className="text-sm text-emerald-500 font-semibold">Global Database</p>
@@ -136,8 +136,10 @@ const Landing = () => {
 
             {/* Testimonials */}
             <section className="bg-white dark:bg-[#111827] py-20 border-t border-slate-100 dark:border-slate-800">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-3 gap-12">
-                    <div className="lg:pr-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row lg:items-stretch gap-8 lg:gap-12">
+
+                    {/* Header Block (Static on all devices) */}
+                    <div className="w-full lg:w-1/3 flex flex-col justify-center shrink-0">
                         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4">What our users are saying</h2>
                         <p className="text-slate-600 dark:text-slate-400 mb-8">Join thousands of people who trust MediCare for their daily health management.</p>
                         <div className="flex -space-x-4">
@@ -148,32 +150,39 @@ const Landing = () => {
                         </div>
                     </div>
 
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
-                        <div className="flex text-yellow-400 mb-4">
-                            ★★★★★
-                        </div>
-                        <p className="text-slate-700 dark:text-slate-300 italic mb-6">"As an elderly person, I used to struggle with all the different pills. The scanner is a life-saver, literally! Everything is so clear and easy to read."</p>
-                        <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full bg-slate-300 mr-4"></div>
-                            <div>
-                                <p className="font-bold text-slate-900 dark:text-white text-sm">Robert Chen</p>
-                                <p className="text-xs text-slate-500">Retired Teacher, 68</p>
-                            </div>
-                        </div>
-                    </div>
+                    {/* Reviews Container (Horizontally Scrollable on Mobile, Grid on Desktop) */}
+                    <div className="w-full lg:w-2/3 flex overflow-x-auto pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 lg:pb-0 lg:grid lg:grid-cols-2 gap-6 snap-x snap-mandatory hide-scroll-bar">
 
-                    <div className="bg-slate-50 dark:bg-slate-800/50 p-8 rounded-3xl border border-slate-100 dark:border-slate-700">
-                        <div className="flex text-yellow-400 mb-4">
-                            ★★★★★
-                        </div>
-                        <p className="text-slate-700 dark:text-slate-300 italic mb-6">"The report analysis tool helped me understand my lab results before I even talked to my doctor. It made me feel much more in control of my health."</p>
-                        <div className="flex items-center">
-                            <div className="w-10 h-10 rounded-full bg-slate-300 mr-4"></div>
-                            <div>
-                                <p className="font-bold text-slate-900 dark:text-white text-sm">Sarah Miller</p>
-                                <p className="text-xs text-slate-500">Freelance Designer, 34</p>
+                        {/* Review 1 */}
+                        <div className="min-w-[85vw] sm:min-w-[400px] w-fit lg:min-w-0 snap-center shrink-0 bg-slate-50 dark:bg-slate-800/50 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col">
+                            <div className="flex text-yellow-400 mb-4">
+                                ★★★★★
+                            </div>
+                            <p className="text-slate-700 dark:text-slate-300 italic mb-6 flex-1">"As an elderly person, I used to struggle with all the different pills. The scanner is a life-saver, literally! Everything is so clear and easy to read."</p>
+                            <div className="flex items-center mt-auto">
+                                <div className="w-10 h-10 rounded-full bg-slate-300 mr-4 shrink-0"></div>
+                                <div>
+                                    <p className="font-bold text-slate-900 dark:text-white text-sm">Robert Chen</p>
+                                    <p className="text-xs text-slate-500">Retired Teacher, 68</p>
+                                </div>
                             </div>
                         </div>
+
+                        {/* Review 2 */}
+                        <div className="min-w-[85vw] sm:min-w-[400px] w-fit lg:min-w-0 snap-center shrink-0 bg-slate-50 dark:bg-slate-800/50 p-8 rounded-3xl border border-slate-100 dark:border-slate-700 flex flex-col">
+                            <div className="flex text-yellow-400 mb-4">
+                                ★★★★★
+                            </div>
+                            <p className="text-slate-700 dark:text-slate-300 italic mb-6 flex-1">"The report analysis tool helped me understand my lab results before I even talked to my doctor. It made me feel much more in control of my health."</p>
+                            <div className="flex items-center mt-auto">
+                                <div className="w-10 h-10 rounded-full bg-slate-300 mr-4 shrink-0"></div>
+                                <div>
+                                    <p className="font-bold text-slate-900 dark:text-white text-sm">Sarah Miller</p>
+                                    <p className="text-xs text-slate-500">Freelance Designer, 34</p>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </section>
