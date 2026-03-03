@@ -15,6 +15,7 @@ import ReportUpload from './pages/ReportUpload';
 import Chatbot from './pages/Chatbot';
 import HealthHistory from './pages/HealthHistory';
 import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/chat" element={<Chatbot />} />
             <Route path="/history" element={<HealthHistory />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/profile" element={<Profile />} />
 
             {/* Fallback routing */}
             <Route path="*" element={<Navigate to="/" replace />} />
