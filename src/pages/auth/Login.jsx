@@ -1,25 +1,41 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { IconBrandGoogle } from '@tabler/icons-react';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+import { authAPI } from '../../services/api';
 
 const Login = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
         if (!formData.email || !formData.password) {
             setError('Please fill all fields');
             return;
         }
         setError('');
-        // Mock login success
-        localStorage.setItem('medicare_token', 'mock-jwt-token');
-        navigate('/dashboard');
+        setLoading(true);
+        dispatch(loginStart());
+        try {
+            const res = await authAPI.login(formData.email, formData.password);
+            dispatch(loginSuccess(res.data));
+            navigate(res.data.profileCompleted ? '/dashboard' : '/profile-setup');
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Login failed. Please check your credentials.';
+            setError(errorMessage);
+            dispatch(loginFailure(errorMessage));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -64,9 +80,24 @@ const Login = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 shadow-md hover:shadow-lg text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                    disabled={loading}
+                    className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 shadow-md hover:shadow-lg text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                    Sign in
+                    {loading ? 'Signing in...' : 'Sign in'}
+                </button>
+
+                <div className="relative flex items-center justify-center mt-6 mb-6">
+                    <span className="absolute bg-white dark:bg-slate-900 px-3 text-sm text-slate-500 dark:text-slate-400 z-10">or</span>
+                    <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+                    className="w-full flex items-center justify-center space-x-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium py-3 px-4 rounded-xl transition-all duration-200"
+                >
+                    <IconBrandGoogle size={20} className="text-red-500" />
+                    <span>Continue with Google</span>
                 </button>
             </form>
 

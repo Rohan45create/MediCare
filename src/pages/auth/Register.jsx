@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { IconBrandGoogle } from '@tabler/icons-react';
+import { useDispatch } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../../store/slices/authSlice';
+import { authAPI } from '../../services/api';
+
 
 const Register = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
     const [error, setError] = useState('');
 
@@ -10,7 +16,9 @@ const Register = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleRegister = (e) => {
+    const [loading, setLoading] = React.useState(false);
+
+    const handleRegister = async (e) => {
         e.preventDefault();
         if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
             setError('Please fill all fields');
@@ -21,9 +29,19 @@ const Register = () => {
             return;
         }
         setError('');
-        // Mock register success and head to profile setup
-        localStorage.setItem('medicare_token', 'mock-jwt-token');
-        navigate('/profile-setup');
+        setLoading(true);
+        dispatch(loginStart());
+        try {
+            const res = await authAPI.register(formData.email, formData.password, formData.name);
+            dispatch(loginSuccess(res.data));
+            navigate('/profile-setup');
+        } catch (err) {
+            const errorMessage = err.response?.data?.error || 'Registration failed. Please try again.';
+            setError(errorMessage);
+            dispatch(loginFailure(errorMessage));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -86,6 +104,20 @@ const Register = () => {
                     className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 shadow-md hover:shadow-lg text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:-translate-y-0.5"
                 >
                     Sign Up
+                </button>
+
+                <div className="relative flex items-center justify-center mt-6 mb-6">
+                    <span className="absolute bg-white dark:bg-slate-900 px-3 text-sm text-slate-500 dark:text-slate-400 z-10">or</span>
+                    <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}
+                    className="w-full flex items-center justify-center space-x-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium py-3 px-4 rounded-xl transition-all duration-200"
+                >
+                    <IconBrandGoogle size={20} className="text-red-500" />
+                    <span>Continue with Google</span>
                 </button>
             </form>
 
