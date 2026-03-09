@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IconSend, IconRobot, IconUser } from '@tabler/icons-react';
+import { chatAPI } from '../services/api';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 const Chatbot = () => {
     const [messages, setMessages] = useState([
         { id: 1, text: "Hello! I'm your MediCare Health Advisor. How can I help you today?", isBot: true },
     ]);
     const [input, setInput] = useState('');
+    const [error, setError] = useState('');
+    const [language, setLanguage] = useState('en');
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
 
@@ -17,31 +21,41 @@ const Chatbot = () => {
         scrollToBottom();
     }, [messages, isTyping]);
 
-    const handleSend = (e) => {
+    const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
 
         const userMessage = { id: Date.now(), text: input, isBot: false };
         setMessages(prev => [...prev, userMessage]);
+        const currentInput = input;
         setInput('');
         setIsTyping(true);
 
-        // Mock bot reply
-        setTimeout(() => {
+        try {
+            const res = await chatAPI.query(currentInput, language);
             const botReply = {
                 id: Date.now() + 1,
-                text: "Based on your health profile, you should continue maintaining a balanced diet. Would you like specific meal recommendations?",
+                text: res.data.answer,
                 isBot: true
             };
             setMessages(prev => [...prev, botReply]);
+        } catch (err) {
+            console.error("Chat API Error:", err);
+            const errReply = {
+                id: Date.now() + 1,
+                text: "I'm having trouble connecting right now. Please try again in a moment.",
+                isBot: true
+            };
+            setMessages(prev => [...prev, errReply]);
+        } finally {
             setIsTyping(false);
-        }, 1500);
+        }
     };
 
     return (
-        <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans pb-24 lg:pb-8">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[calc(100vh-64px)] flex flex-col">
-                <div className="flex flex-col flex-1 bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="w-full bg-slate-50 dark:bg-[#0b1121] font-sans">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[80vh] flex flex-col">
+                <div className="flex flex-col h-full bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
                     {/* Chat header */}
                     <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shrink-0 flex items-center">
                         <div className="h-10 w-10 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mr-4">
@@ -52,6 +66,19 @@ const Chatbot = () => {
                             <p className="text-xs text-blue-600 dark:text-blue-400 font-medium flex items-center">
                                 <span className="h-2 w-2 rounded-full bg-blue-500 mr-1 animate-pulse"></span> Online
                             </p>
+                        </div>
+                        <div className="ml-auto">
+                            <select
+                                value={language}
+                                onChange={(e) => setLanguage(e.target.value)}
+                                className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                            >
+                                <option value="en">English (US)</option>
+                                <option value="hi">Hindi</option>
+                                <option value="bn">Bengali</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                            </select>
                         </div>
                     </div>
 
@@ -64,7 +91,11 @@ const Chatbot = () => {
                                         {msg.isBot ? <IconRobot size={16} className="text-blue-600 dark:text-blue-400" /> : <IconUser size={16} className="text-slate-600 dark:text-slate-300" />}
                                     </div>
                                     <div className={`px-4 py-3 rounded-2xl ${msg.isBot ? 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-tl-none' : 'bg-blue-600 text-white rounded-tr-none shadow-md'}`}>
-                                        <p className="text-sm">{msg.text}</p>
+                                        {msg.isBot ? (
+                                            <MarkdownRenderer content={msg.text} />
+                                        ) : (
+                                            <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +129,7 @@ const Chatbot = () => {
                             />
                             <button
                                 type="submit"
-                                disabled={!input.trim()}
+                                disabled={!input.trim() || isTyping}
                                 className="absolute right-2 h-10 w-10 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 dark:disabled:bg-blue-800 text-white rounded-full flex items-center justify-center transition-colors shadow-md"
                             >
                                 <IconSend size={18} className="ml-1" />
