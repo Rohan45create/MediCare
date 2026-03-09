@@ -1,5 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { profileAPI } from '../services/api';
+import { loginSuccess } from '../store/slices/authSlice';
 import {
     IconTrophy,
     IconSettings,
@@ -15,21 +18,28 @@ import {
     IconCheck,
     IconMail,
     IconPhone,
-    IconCalendar
+    IconCalendar,
+    IconCircleX
 } from '@tabler/icons-react';
 
 const Profile = () => {
-    // Editable user state
+    const dispatch = useDispatch();
+    const { user: authUser, token } = useSelector((state) => state.auth);
+
+    // Initial state falls back to empty fields, except name/email which come from auth
     const [user, setUser] = useState({
-        name: 'Hello-Michael',
-        email: 'michael_1508@world.com',
-        phone: '+1 234 567 8900',
-        dob: '1990-05-15',
-        avatar: 'https://i.pravatar.cc/150?img=11'
+        name: authUser?.name || 'Unknown User',
+        email: authUser?.email || '',
+        phone: authUser?.phone || '',
+        dob: '',
+        avatar: authUser?.profileImage ? `data:image/jpeg;base64,${authUser.profileImage}` : null
     });
 
+    const [countryCode, setCountryCode] = useState('+91');
     const [editingField, setEditingField] = useState(null);
     const [tempValue, setTempValue] = useState('');
+    const [showOtpInput, setShowOtpInput] = useState(false);
+    const [otpCode, setOtpCode] = useState('');
     const fileInputRef = useRef(null);
 
     const handleEditClick = (field, value) => {
@@ -37,19 +47,64 @@ const Profile = () => {
         setTempValue(value);
     };
 
-    const handleSaveClick = (field) => {
-        setUser({ ...user, [field]: tempValue });
-        setEditingField(null);
+    const handleSaveClick = async (field) => {
+        if (field === 'email' || field === 'phone') {
+            const newValue = field === 'phone' ? `${countryCode} ${tempValue}` : tempValue;
+            try {
+                await profileAPI.sendOtp({ fieldType: field, newValue });
+                setShowOtpInput(true);
+            } catch (err) {
+                console.error("Failed to send OTP", err);
+            }
+        } else {
+            // normal save for other fields, e.g DOB or Name
+            setUser({ ...user, [field]: tempValue });
+            setEditingField(null);
+        }
     };
 
-    const handleImageUpload = (e) => {
+    const handleVerifyOtp = async (field) => {
+        const newValue = field === 'phone' ? `${countryCode} ${tempValue}` : tempValue;
+        try {
+            await profileAPI.verifyOtp({ fieldType: field, otp: otpCode });
+            setUser({ ...user, [field]: tempValue });
+
+            // Re-fetch or dispatch to redux
+            const profileRes = await profileAPI.getProfile();
+            dispatch(loginSuccess({ user: profileRes.data, token }));
+
+            setEditingField(null);
+            setShowOtpInput(false);
+            setOtpCode('');
+        } catch (err) {
+            console.error("OTP Verification failed", err);
+            alert("Invalid OTP");
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingField(null);
+        setShowOtpInput(false);
+        setOtpCode('');
+    };
+
+    const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Optimistic UI update
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setUser({ ...user, avatar: reader.result });
-            };
+            reader.onloadend = () => setUser(prev => ({ ...prev, avatar: reader.result }));
             reader.readAsDataURL(file);
+
+            // API Call
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                const res = await profileAPI.uploadImage(formData);
+                dispatch(loginSuccess({ user: res.data, token }));
+            } catch (err) {
+                console.error("Failed to upload image:", err);
+            }
         }
     };
 
@@ -69,25 +124,79 @@ const Profile = () => {
                     <div className="flex-1">
                         <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5">{label}</p>
                         {isEditing ? (
-                            <input
-                                type={type}
-                                value={tempValue}
-                                onChange={(e) => setTempValue(e.target.value)}
-                                className="w-full bg-white dark:bg-slate-900 border border-blue-500 rounded px-2 py-1 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50"
-                                autoFocus
-                            />
+                            field === 'phone' ? (
+                                <div className="flex">
+                                    <select
+                                        value={countryCode}
+                                        onChange={(e) => setCountryCode(e.target.value)}
+                                        className="bg-slate-100 dark:bg-slate-800 border border-blue-500 rounded-l px-2 text-sm outline-none text-slate-900 dark:text-white"
+                                    >
+                                        <option value="+91">+91 (IN)</option>
+                                        <option value="+1">+1 (US)</option>
+                                        <option value="+44">+44 (UK)</option>
+                                    </select>
+                                    <input
+                                        type={type}
+                                        value={tempValue}
+                                        onChange={(e) => setTempValue(e.target.value)}
+                                        placeholder="10-digit number"
+                                        className="w-full bg-white dark:bg-slate-900 border-y border-r border-blue-500 rounded-r px-2 py-1 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50"
+                                        autoFocus
+                                    />
+                                </div>
+                            ) : (
+                                <input
+                                    type={type}
+                                    value={tempValue}
+                                    onChange={(e) => setTempValue(e.target.value)}
+                                    className="w-full bg-white dark:bg-slate-900 border border-blue-500 rounded px-2 py-1 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500/50"
+                                    autoFocus
+                                />
+                            )
                         ) : (
-                            <p className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base break-all">{user[field] || 'Not set'}</p>
+                            <p className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base break-all">
+                                {field === 'phone' && user[field] ? user[field] : user[field] || 'Not set'}
+                            </p>
+                        )}
+
+                        {/* OTP Verification sub-form */}
+                        {isEditing && showOtpInput && (
+                            <div className="mt-3 flex items-center space-x-2 animate-fadeIn">
+                                <input
+                                    type="text"
+                                    value={otpCode}
+                                    onChange={(e) => setOtpCode(e.target.value)}
+                                    placeholder="Enter 6-digit OTP"
+                                    className="flex-1 bg-white dark:bg-slate-900 border border-emerald-500 rounded px-2 py-1 text-sm text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-emerald-500/50"
+                                    maxLength="6"
+                                />
+                                <button
+                                    onClick={() => handleVerifyOtp(field)}
+                                    className="px-3 py-1 bg-emerald-600 text-white rounded font-semibold text-sm hover:bg-emerald-700 transition"
+                                >
+                                    Verify
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>
                 {isEditing ? (
-                    <button
-                        onClick={() => handleSaveClick(field)}
-                        className="p-2 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 transition-colors"
-                    >
-                        <IconCheck size={18} />
-                    </button>
+                    <div className="flex space-x-2">
+                        {!showOtpInput && (
+                            <button
+                                onClick={() => handleSaveClick(field)}
+                                className="p-2 bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-lg hover:bg-emerald-200 transition-colors"
+                            >
+                                <IconCheck size={18} />
+                            </button>
+                        )}
+                        <button
+                            onClick={handleCancelEdit}
+                            className="p-2 bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400 rounded-lg hover:bg-red-200 transition-colors"
+                        >
+                            <IconCircleX size={18} />
+                        </button>
+                    </div>
                 ) : (
                     <button
                         onClick={() => handleEditClick(field, user[field])}

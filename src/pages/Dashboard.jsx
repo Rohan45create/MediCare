@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../store/slices/authSlice';
+import { dashboardAPI } from '../services/api';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -18,6 +21,24 @@ import { IconDownload, IconAlertTriangle, IconCircleCheckFilled, IconCircle, Ico
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
 const Dashboard = () => {
+    const user = useSelector(selectUser);
+    const [summaryData, setSummaryData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                const res = await dashboardAPI.getSummary();
+                setSummaryData(res.data);
+            } catch (err) {
+                console.error("Failed to fetch dashboard", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchSummary();
+    }, []);
+
     // Interactive Checklist State
     const [checklist, setChecklist] = useState([
         { id: 1, text: 'Morning Blood Pressure Reading', completed: true },
@@ -32,13 +53,22 @@ const Dashboard = () => {
         ));
     };
 
-    // 1. Line Chart Data (HbA1c)
+    // 1. Line Chart Data (Health Trends / Risk Levels over time)
+    const trendLabels = summaryData?.healthTrends?.map(t => new Date(t.date).toLocaleDateString()) || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'];
+    // Convert risk levels to a numeric metric for the chart
+    const riskScores = summaryData?.healthTrends?.map(t => {
+        if (t.riskLevel === 'HIGH') return 8.0;
+        if (t.riskLevel === 'MEDIUM') return 6.0;
+        if (t.riskLevel === 'LOW') return 4.0;
+        return 5.5;
+    }) || [5.8, 6.1, 6.3, 6.0, 5.8, 5.9, 5.7];
+
     const lineData = {
-        labels: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'],
+        labels: trendLabels,
         datasets: [
             {
-                label: 'HbA1c',
-                data: [5.8, 6.1, 6.3, 6.0, 5.8, 5.9, 5.7],
+                label: 'Risk Trend',
+                data: riskScores,
                 borderColor: '#2563eb', // blue-600
                 backgroundColor: 'transparent',
                 borderWidth: 3,
@@ -52,7 +82,7 @@ const Dashboard = () => {
         plugins: { legend: { display: false }, tooltip: { enabled: false } },
         scales: {
             x: { grid: { display: false, drawBorder: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } },
-            y: { display: false, min: 5.0, max: 6.5 }
+            y: { display: false, min: 2.0, max: 10.0 }
         }
     };
 
@@ -83,11 +113,12 @@ const Dashboard = () => {
         }
     };
 
-    // 3. Doughnut Chart (Cholesterol)
+    // 3. Doughnut Chart (Health Score)
+    const score = summaryData?.healthScore || 70;
     const doughnutData = {
-        labels: ['Completed', 'Remaining'],
+        labels: ['Score', 'Remaining'],
         datasets: [{
-            data: [75, 25],
+            data: [score, 100 - score],
             backgroundColor: ['#2563eb', '#e2e8f0'],
             borderWidth: 0,
             circumference: 270,
@@ -110,20 +141,20 @@ const Dashboard = () => {
                         Health Overview
                     </h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                        Good morning, Robert. Your vitals are stable today.
+                        {loading ? 'Loading your health summary...' : (user?.name || summaryData?.userName ? `Good morning, ${user?.name || summaryData?.userName}. Here is your health overview.` : 'Good morning. Your vitals are stable today.')}
                     </p>
                 </div>
 
                 {/* Top Health Metrics Cards (3 cols) */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-                    {/* HbA1c Card */}
+                    {/* Recent Trends Card */}
                     <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col h-64">
                         <div className="flex justify-between items-start mb-2">
-                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">HbA1c Levels</span>
-                            <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full">-0.2%</span>
+                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Activity & Reports</span>
+                            <span className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full">{summaryData?.totalReports || 0} files</span>
                         </div>
-                        <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-auto">5.7%</h2>
+                        <h2 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-auto">{summaryData?.totalScans || 0} <span className="text-lg text-slate-400">Scans</span></h2>
                         <div className="h-24 w-full mt-4 -ml-2">
                             <Line data={lineData} options={lineOptions} />
                         </div>
@@ -141,21 +172,21 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    {/* Cholesterol Card */}
+                    {/* Health Score Card */}
                     <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col h-64 relative">
                         <div className="flex justify-between items-start mb-2">
-                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Cholesterol</span>
-                            <span className="px-2 py-1 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-500 text-xs font-bold rounded-full">+5%</span>
+                            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">Overall Health Score</span>
+                            <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-500 text-xs font-bold rounded-full">AI Rated</span>
                         </div>
-                        <h2 className="text-4xl font-extrabold text-amber-600 dark:text-amber-500 mb-2">185 <span className="text-sm font-bold text-slate-400">mg/dL</span></h2>
+                        <h2 className="text-4xl font-extrabold text-blue-600 dark:text-blue-500 mb-2">{score} <span className="text-sm font-bold text-slate-400">/100</span></h2>
 
                         <div className="relative h-24 w-full flex items-center justify-center mt-auto">
                             <div className="absolute inset-0 flex flex-col items-center justify-center pt-2">
-                                <span className="text-xs font-bold text-slate-900 dark:text-white">Q3 Target</span>
+                                <span className="text-xs font-bold text-slate-900 dark:text-white">Fair</span>
                             </div>
                             <Doughnut data={doughnutData} options={doughnutOptions} />
                         </div>
-                        <p className="text-center text-xs text-slate-400 font-medium mt-4">Next check-up in 12 days</p>
+                        <p className="text-center text-xs text-slate-400 font-medium mt-4">Calculated from recent activity</p>
                     </div>
 
                 </div>
@@ -181,56 +212,78 @@ const Dashboard = () => {
 
                             {/* List items */}
                             <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                {/* Item 1 */}
-                                <div className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                    <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
-                                        <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                            <IconActivity className="text-blue-600 dark:text-blue-400" size={20} />
+                                {summaryData && summaryData.recentScans && summaryData.recentScans.length > 0 ? (
+                                    summaryData.recentScans.map((scan, idx) => (
+                                        <div key={idx} className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
+                                                <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                                    <IconActivity className="text-blue-600 dark:text-blue-400" size={20} />
+                                                </div>
+                                                <span className="font-bold text-slate-900 dark:text-white">{scan.medicineName}</span>
+                                            </div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">{new Date(scan.scannedAt).toLocaleDateString()}</div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Scanned Medicine</div>
+                                            <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
+                                                <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                                    <IconDownload size={20} />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <span className="font-bold text-slate-900 dark:text-white">Chest X-Ray</span>
-                                    </div>
-                                    <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">Oct 12, 2023</div>
-                                    <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Dr. Sarah Chen</div>
-                                    <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
-                                        <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                            <IconDownload size={20} />
-                                        </button>
-                                    </div>
-                                </div>
+                                    ))
+                                ) : (
+                                    <>
+                                        {/* Item 1 */}
+                                        <div className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
+                                                <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                                                    <IconActivity className="text-blue-600 dark:text-blue-400" size={20} />
+                                                </div>
+                                                <span className="font-bold text-slate-900 dark:text-white">Chest X-Ray</span>
+                                            </div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">Oct 12, 2023</div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Dr. Sarah Chen</div>
+                                            <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
+                                                <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                                    <IconDownload size={20} />
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                {/* Item 2 */}
-                                <div className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                    <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
-                                        <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
-                                            <IconBrain className="text-purple-600 dark:text-purple-400" size={20} />
+                                        {/* Item 2 */}
+                                        <div className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
+                                                <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
+                                                    <IconBrain className="text-purple-600 dark:text-purple-400" size={20} />
+                                                </div>
+                                                <span className="font-bold text-slate-900 dark:text-white">Brain MRI</span>
+                                            </div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">Sep 28, 2023</div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Dr. James Wilson</div>
+                                            <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
+                                                <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                                    <IconDownload size={20} />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <span className="font-bold text-slate-900 dark:text-white">Brain MRI</span>
-                                    </div>
-                                    <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">Sep 28, 2023</div>
-                                    <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Dr. James Wilson</div>
-                                    <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
-                                        <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                            <IconDownload size={20} />
-                                        </button>
-                                    </div>
-                                </div>
 
-                                {/* Item 3 */}
-                                <div className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                    <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
-                                        <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
-                                            <IconHeartbeat className="text-rose-600 dark:text-rose-400" size={20} />
+                                        {/* Item 3 */}
+                                        <div className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
+                                                <div className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center shrink-0">
+                                                    <IconHeartbeat className="text-rose-600 dark:text-rose-400" size={20} />
+                                                </div>
+                                                <span className="font-bold text-slate-900 dark:text-white">Echo Cardiogram</span>
+                                            </div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">Aug 15, 2023</div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Dr. Elena Rodriguez</div>
+                                            <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
+                                                <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
+                                                    <IconDownload size={20} />
+                                                </button>
+                                            </div>
                                         </div>
-                                        <span className="font-bold text-slate-900 dark:text-white">Echo Cardiogram</span>
-                                    </div>
-                                    <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">Aug 15, 2023</div>
-                                    <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Dr. Elena Rodriguez</div>
-                                    <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
-                                        <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                            <IconDownload size={20} />
-                                        </button>
-                                    </div>
-                                </div>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -269,14 +322,14 @@ const Dashboard = () => {
                                         className="flex items-center space-x-3 cursor-pointer group"
                                     >
                                         <div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 transition-colors ${item.completed
-                                                ? 'bg-blue-600 border border-blue-600 text-white'
-                                                : 'border-2 border-slate-200 dark:border-slate-600 bg-transparent'
+                                            ? 'bg-blue-600 border border-blue-600 text-white'
+                                            : 'border-2 border-slate-200 dark:border-slate-600 bg-transparent'
                                             }`}>
                                             {item.completed && <IconCircleCheckFilled size={16} className="text-white" />}
                                         </div>
                                         <span className={`text-sm font-medium transition-colors ${item.completed
-                                                ? 'text-slate-400 dark:text-slate-500 line-through'
-                                                : 'text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'
+                                            ? 'text-slate-400 dark:text-slate-500 line-through'
+                                            : 'text-slate-600 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white'
                                             }`}>
                                             {item.text}
                                         </span>
@@ -312,7 +365,7 @@ const Dashboard = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
     );
 };
 
