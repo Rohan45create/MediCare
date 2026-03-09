@@ -1,32 +1,45 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { IconCloudUpload, IconFile, IconX, IconCircleCheck } from '@tabler/icons-react';
+import { reportAPI } from '../services/api';
 
 const ReportUpload = () => {
+    const navigate = useNavigate();
     const [file, setFile] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
     const [uploadComplete, setUploadComplete] = useState(false);
+    const [error, setError] = useState('');
 
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
             setUploadComplete(false);
+            setError('');
         }
     };
 
     const clearFile = () => {
         setFile(null);
         setUploadComplete(false);
+        setError('');
     };
 
-    const handleUpload = () => {
+    const handleUpload = async () => {
         if (!file) return;
         setIsUploading(true);
-
-        // Simulate upload delay
-        setTimeout(() => {
-            setIsUploading(false);
+        setError('');
+        try {
+            const res = await reportAPI.upload(file);
+            const { reportId } = res.data;
             setUploadComplete(true);
-        }, 2000);
+            // Redirect to report results page after short delay
+            setTimeout(() => {
+                navigate(`/report-results/${reportId}`);
+            }, 1200);
+        } catch (err) {
+            setError(err.response?.data?.error || 'Upload failed. Please try again.');
+            setIsUploading(false);
+        }
     };
 
     return (
@@ -37,6 +50,8 @@ const ReportUpload = () => {
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Upload Medical Report</h1>
                         <p className="text-slate-500 dark:text-slate-400">Our AI will extract the data and track your health trends over time.</p>
                     </div>
+
+                    {error && <div className="mb-6 p-3 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm border border-red-200 dark:border-red-800">{error}</div>}
 
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-8 text-center">
 
@@ -50,7 +65,7 @@ const ReportUpload = () => {
                                 />
                                 <IconCloudUpload className="mx-auto h-16 w-16 text-slate-400 mb-4" />
                                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">Click to Upload or Drag and Drop</h3>
-                                <p className="text-slate-500 dark:text-slate-400 text-sm">Supported formats: PDF, JPG, PNG (Max 5MB)</p>
+                                <p className="text-slate-500 dark:text-slate-400 text-sm">Supported formats: PDF, JPG, PNG (Max 10MB)</p>
                             </div>
                         ) : (
                             <div className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700">
@@ -74,7 +89,7 @@ const ReportUpload = () => {
                                 {isUploading && (
                                     <div className="mt-6">
                                         <div className="flex justify-between text-sm mb-2">
-                                            <span className="text-slate-600 dark:text-slate-300 font-medium">Extracting data via OCR...</span>
+                                            <span className="text-slate-600 dark:text-slate-300 font-medium">Uploading & running OCR analysis...</span>
                                             <span className="text-emerald-600 dark:text-emerald-400 font-bold">Processing</span>
                                         </div>
                                         <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
@@ -87,8 +102,8 @@ const ReportUpload = () => {
                                     <div className="mt-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl flex items-start text-left">
                                         <IconCircleCheck className="text-emerald-500 mt-0.5 mr-3 shrink-0" size={20} />
                                         <div>
-                                            <h4 className="font-semibold text-emerald-800 dark:text-emerald-300">Analysis Complete</h4>
-                                            <p className="text-sm text-emerald-600 dark:text-emerald-400/80 mt-1">We found your HbA1c is 6.2%. This has been added to your dashboard.</p>
+                                            <h4 className="font-semibold text-emerald-800 dark:text-emerald-300">Upload Complete</h4>
+                                            <p className="text-sm text-emerald-600 dark:text-emerald-400/80 mt-1">Redirecting to analysis results...</p>
                                         </div>
                                     </div>
                                 )}
