@@ -72,6 +72,7 @@ export const reportAPI = {
 export const scanAPI = {
   scanBarcode: (barcode) => api.get(`/scans/barcode/${barcode}`),
   getHistory: () => api.get('/scans/history'),
+  getById: (id) => api.get(`/scans/${id}`),
 };
 
 // ── Chat ──────────────────────────────────────────────
