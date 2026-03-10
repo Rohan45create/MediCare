@@ -42,6 +42,26 @@ const Profile = () => {
     const [otpCode, setOtpCode] = useState('');
     const fileInputRef = useRef(null);
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const res = await profileAPI.getProfile();
+                const fetchedUser = res.data;
+                setUser({
+                    name: fetchedUser.name || 'Unknown User',
+                    email: fetchedUser.email || '',
+                    phone: fetchedUser.phone || '',
+                    dob: fetchedUser.dob || '',
+                    avatar: fetchedUser.profileImage ? `data:image/jpeg;base64,${fetchedUser.profileImage}` : null
+                });
+                dispatch(loginSuccess({ user: fetchedUser, token }));
+            } catch (err) {
+                console.error("Failed to fetch user profile", err);
+            }
+        };
+        fetchUserData();
+    }, [dispatch, token]);
+
     const handleEditClick = (field, value) => {
         setEditingField(field);
         setTempValue(value);
@@ -100,8 +120,13 @@ const Profile = () => {
             try {
                 const formData = new FormData();
                 formData.append('file', file);
-                const res = await profileAPI.uploadImage(formData);
-                dispatch(loginSuccess({ user: res.data, token }));
+                await profileAPI.uploadImage(formData);
+                const profileRes = await profileAPI.getProfile();
+                dispatch(loginSuccess({ user: profileRes.data, token }));
+                setUser(prev => ({
+                    ...prev,
+                    avatar: profileRes.data.profileImage ? `data:image/jpeg;base64,${profileRes.data.profileImage}` : reader.result
+                }));
             } catch (err) {
                 console.error("Failed to upload image:", err);
             }
