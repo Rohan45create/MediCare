@@ -6,6 +6,8 @@ import {
 } from '@tabler/icons-react';
 import { reportAPI } from '../services/api';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const riskColors = {
     LOW: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', icon: IconCircleCheckFilled },
@@ -61,6 +63,49 @@ const ReportResults = () => {
         try { testValues = JSON.parse(result.testValues); } catch { }
     }
 
+    const handleDownloadPDF = async () => {
+        const input = document.getElementById('pdf-content');
+        if (!input) return;
+
+        try {
+            const buttons = input.querySelectorAll('button');
+            buttons.forEach(b => b.style.display = 'none');
+
+            const canvas = await html2canvas(input, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: document.documentElement.classList.contains('dark') ? '#0b1121' : '#f8fafc'
+            });
+
+            buttons.forEach(b => b.style.display = '');
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            let heightLeft = pdfHeight;
+            let position = 0;
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save(`${data?.fileName || 'Report'}_Analysis.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            const buttons = input.querySelectorAll('button');
+            buttons.forEach(b => b.style.display = '');
+        }
+    };
+
     if (loading || (data?.status === 'PROCESSING' && !result?.aiExplanation)) {
         return (
             <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans flex items-center justify-center">
@@ -91,23 +136,28 @@ const ReportResults = () => {
 
     return (
         <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans pb-24 lg:pb-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="pdf-content">
 
                 {/* Header */}
                 <div className="flex flex-col mb-8">
-                    <div className="flex items-center space-x-4 mb-4">
-                        <button onClick={() => navigate('/reports')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition">
-                            <IconArrowLeft size={20} />
-                        </button>
-                        <div>
-                            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Report Analysis</h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                                {data?.fileName} &nbsp;·&nbsp;
-                                <span className="flex items-center inline-flex gap-1">
-                                    <IconCalendar size={12} /> {data?.uploadedAt ? new Date(data.uploadedAt).toLocaleDateString() : ''}
-                                </span>
-                            </p>
+                    <div className="flex justify-between items-start">
+                        <div className="flex items-center space-x-4 mb-4">
+                            <button onClick={() => navigate('/reports')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition">
+                                <IconArrowLeft size={20} />
+                            </button>
+                            <div>
+                                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Report Analysis</h1>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                    {data?.fileName} &nbsp;·&nbsp;
+                                    <span className="flex items-center inline-flex gap-1">
+                                        <IconCalendar size={12} /> {data?.uploadedAt ? new Date(data.uploadedAt).toLocaleDateString() : ''}
+                                    </span>
+                                </p>
+                            </div>
                         </div>
+                        <button onClick={handleDownloadPDF} className="flex items-center justify-center p-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                            <IconDownload size={20} />
+                        </button>
                     </div>
                 </div>
 
