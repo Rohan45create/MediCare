@@ -1,4 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { reportAPI, scanAPI } from '../services/api';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import {
     IconHistory,
     IconDownload,
@@ -16,9 +21,13 @@ import {
 } from '@tabler/icons-react';
 
 const HealthHistory = () => {
+    const { user } = useSelector(state => state.auth);
+    const navigate = useNavigate();
     const [activeFilter, setActiveFilter] = useState('All Records');
     const [dateRange, setDateRange] = useState('Last 12 Months');
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [historyData, setHistoryData] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const filters = [
         { name: 'All Records', icon: <IconLayoutList size={16} /> },
@@ -29,81 +38,112 @@ const HealthHistory = () => {
 
     const dateOptions = ['Past 30 Days', 'Past 6 Months', 'Last 12 Months', 'All Time'];
 
-    // Mock Timeline Data
-    const mockTimelineData = [
-        {
-            id: 1,
-            type: 'Reports',
-            tag: 'ROUTINE',
-            date: 'Oct 24, 2023 • 10:30 AM',
-            title: 'Annual Physical Examination',
-            status: 'Healthy Status',
-            statusColor: 'green',
-            doctor: 'Dr. Sarah Mitchell',
-            description: 'Comprehensive wellness check including vitals, BMI, and physical mobility assessment. Patient shows excellent heart rate recovery and stable blood pressure.',
-            icon: IconFileText,
-            nodeColor: 'bg-blue-500',
-            attachments: [
-                { name: 'Physical_Report.pdf', type: 'pdf' },
-                { name: 'Vitals_Summary.csv', type: 'csv' }
-            ]
-        },
-        {
-            id: 2,
-            type: 'Scans & Labs',
-            tag: 'IMAGING',
-            date: 'Oct 12, 2023 • 02:15 PM',
-            title: 'Brain MRI Scan (Contrast)',
-            status: 'Normal Findings',
-            statusColor: 'slate',
-            doctor: 'Radiology: St. Lukes Center',
-            description: 'Neurological assessment following reports of mild dizziness. High-resolution imaging of cranial structures performed.',
-            icon: IconMicroscope,
-            nodeColor: 'bg-indigo-500',
-            imaging: {
-                diagnosis: 'No anomalies found',
-                details: 'The scan indicates normal brain volume and no signs of vascular obstruction.'
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const [reportsRes, scansRes] = await Promise.all([
+                    reportAPI.getMine(),
+                    scanAPI.getHistory()
+                ]);
+
+                // Map Reports
+                const reports = Array.isArray(reportsRes.data) ? reportsRes.data.map(repo => {
+                    const rDate = new Date(repo.uploadedAt || Date.now());
+                    return {
+                        id: `repo_${repo.id}`,
+                        originalId: repo.id,
+                        type: 'Reports',
+                        tag: 'ROUTINE',
+                        date: `${rDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} • ${rDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`,
+                        timestamp: rDate.getTime(),
+                        title: repo.fileName || 'Medical Report',
+                        status: repo.result ? repo.result.riskLevel || 'Analyzed' : (repo.status || 'Analyzed'),
+                        statusColor: repo.result?.riskLevel === 'High' ? 'red' : (repo.result?.riskLevel === 'Medium' ? 'amber' : 'green'),
+                        doctor: 'Analyzed by AI',
+                        description: repo.result?.aiExplanation ? (repo.result.aiExplanation.length > 150 ? repo.result.aiExplanation.substring(0, 150) + '...' : repo.result.aiExplanation) : 'Report processed.',
+                        icon: IconFileText,
+                        nodeColor: 'bg-blue-500',
+                        attachments: [
+                            { name: repo.fileName || 'Report.pdf', type: repo.fileType?.includes('csv') ? 'csv' : 'pdf', url: `/reports/download/${repo.id}` }
+                        ]
+                    };
+                }) : [];
+
+                // Map Scans
+                const scans = Array.isArray(scansRes.data) ? scansRes.data.map(scan => {
+                    const sDate = new Date(scan.scannedAt || Date.now());
+                    return {
+                        id: `scan_${scan.id}`,
+                        originalId: scan.id,
+                        type: 'Scans & Labs',
+                        tag: 'IMAGING',
+                        date: `${sDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} • ${sDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`,
+                        timestamp: sDate.getTime(),
+                        title: scan.medicineName || 'Medicine Scan',
+                        status: 'Completed',
+                        statusColor: 'slate',
+                        doctor: 'MediCare System',
+                        description: scan.scanResult ? (scan.scanResult.length > 150 ? scan.scanResult.substring(0, 150) + '...' : scan.scanResult) : 'Scan analysis completed.',
+                        icon: IconMicroscope,
+                        nodeColor: 'bg-indigo-500',
+                    };
+                }) : [];
+
+                const combined = [...reports, ...scans].sort((a, b) => b.timestamp - a.timestamp);
+                setHistoryData(combined);
+            } catch (err) {
+                console.error("Failed to fetch history data", err);
+            } finally {
+                setLoading(false);
             }
-        },
-        {
-            id: 3,
-            type: 'Consultations',
-            tag: 'CHAT',
-            date: 'Sep 15, 2023 • 09:45 AM',
-            title: 'Telehealth Consultation',
-            status: 'Follow-up Recommended',
-            statusColor: 'blue',
-            doctor: 'Dr. James Wilson',
-            icon: IconMessageCircle,
-            nodeColor: 'bg-cyan-500',
-            transcriptPreview: "Hello, I've been feeling some stiffness in my knee during morning walks..."
-        },
-        {
-            id: 4,
-            type: 'Scans & Labs',
-            tag: 'LABS',
-            date: 'Aug 30, 2023 • 08:00 AM',
-            title: 'Lipid Panel & CBC',
-            status: 'Action Required',
-            statusColor: 'red',
-            doctor: 'Lab: HealthFirst Diagnostic',
-            description: 'Routine blood work for cholesterol and complete blood count assessment.',
-            icon: IconFileAnalytics, // Updated generic icon since SVG was hardcoded before
-            nodeColor: 'bg-amber-500',
-            labs: [
-                { name: 'LDL Cholesterol', value: '165 mg/dL', status: 'High', isAbnormal: true },
-                { name: 'Hemoglobin', value: '14.2 g/dL', status: 'Normal', isAbnormal: false }
-            ]
-        }
-    ];
+        };
+        fetchHistory();
+    }, []);
+
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+
+        doc.setFontSize(20);
+        doc.setTextColor(37, 99, 235);
+        doc.text("MediCare Request History", 14, 20);
+
+        doc.setFontSize(12);
+        doc.setTextColor(15, 23, 42);
+        doc.text(`Name: ${user?.name || 'Patient'}`, 14, 30);
+        doc.text(`Email: ${user?.email || 'N/A'}`, 14, 36);
+        doc.text(`Phone: ${user?.phone || 'N/A'}`, 14, 42);
+
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 50);
+
+        const tableColumn = ["Date", "Type", "Title", "Status"];
+        const tableRows = historyData.map(item => [
+            item.date,
+            item.type,
+            item.title,
+            item.status
+        ]);
+
+        autoTable(doc, {
+            head: [tableColumn],
+            body: tableRows,
+            startY: 60,
+            theme: 'grid',
+            headStyles: { fillColor: [37, 99, 235] },
+            alternateRowStyles: { fillColor: [241, 245, 249] }
+        });
+
+        doc.save("MediCare_History_Statement.pdf");
+    };
 
     // Filter Logic
     const filteredTimeline = useMemo(() => {
-        return mockTimelineData.filter(item => {
+        return historyData.filter(item => {
             if (activeFilter === 'All Records') return true;
             return item.type === activeFilter;
         });
-    }, [activeFilter]);
+    }, [activeFilter, historyData]);
 
     // Helper function to render status badges
     const renderStatusBadge = (status, colorName) => {
@@ -160,7 +200,7 @@ const HealthHistory = () => {
                             <h1 className="text-3xl md:text-4xl font-extrabold mb-2">Medical History</h1>
                             <p className="text-slate-500 dark:text-slate-400">Detailed chronological record of your healthcare journey.</p>
                         </div>
-                        <button className="mt-4 md:mt-0 w-full md:w-auto flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-sm shadow-blue-600/20">
+                        <button onClick={exportToPDF} className="mt-4 md:mt-0 w-full md:w-auto flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-colors shadow-sm shadow-blue-600/20">
                             <IconDownload size={20} />
                             <span>Export All Data</span>
                         </button>
@@ -176,8 +216,8 @@ const HealthHistory = () => {
                                         key={filter.name}
                                         onClick={() => setActiveFilter(filter.name)}
                                         className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-semibold transition-colors border ${activeFilter === filter.name
-                                                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/50'
-                                                : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                            ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800/50'
+                                            : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'
                                             }`}
                                     >
                                         {filter.icon}
@@ -207,8 +247,8 @@ const HealthHistory = () => {
                                                 setDropdownOpen(false);
                                             }}
                                             className={`w-full text-left px-4 py-3 text-sm transition-colors ${dateRange === option
-                                                    ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold'
-                                                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                                                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold'
+                                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50'
                                                 }`}
                                         >
                                             {option}
@@ -237,7 +277,13 @@ const HealthHistory = () => {
                                             <NodeIcon size={20} />
                                         </div>
 
-                                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 relative group hover:shadow-md transition-shadow">
+                                        <div
+                                            onClick={() => {
+                                                if (item.type === 'Reports') navigate(`/report-results/${item.originalId}`);
+                                                else if (item.type === 'Scans & Labs') navigate(`/scan-results/${item.originalId}`);
+                                            }}
+                                            className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 dark:border-slate-800 relative group hover:shadow-md transition-shadow cursor-pointer"
+                                        >
 
                                             {/* Card Header row */}
                                             <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4">
@@ -263,9 +309,17 @@ const HealthHistory = () => {
 
                                             {/* Block: Attachments (Routine) */}
                                             {item.attachments && (
-                                                <div className="flex flex-wrap gap-3">
+                                                <div className="flex flex-wrap gap-3 mt-4">
                                                     {item.attachments.map(att => (
-                                                        <button key={att.name} className="flex items-center space-x-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors text-sm font-medium">
+                                                        <button
+                                                            key={att.name}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                const baseUrl = 'http://localhost:8080/api';
+                                                                const url = att.url.startsWith('http') ? att.url : baseUrl + att.url;
+                                                                window.open(url, '_blank');
+                                                            }}
+                                                            className="flex items-center space-x-2 px-4 py-2.5 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors text-sm font-medium">
                                                             {att.type === 'pdf' ? <IconFileTypePdf size={20} className="text-red-500" /> : <IconFileAnalytics size={20} className="text-blue-500" />}
                                                             <span>{att.name}</span>
                                                         </button>
@@ -304,8 +358,8 @@ const HealthHistory = () => {
                                                 <div className="space-y-3">
                                                     {item.labs.map(lab => (
                                                         <div key={lab.name} className={`border rounded-xl p-4 flex justify-between items-center ${lab.isAbnormal
-                                                                ? 'bg-red-50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30'
-                                                                : 'bg-green-50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30'
+                                                            ? 'bg-red-50 dark:bg-red-900/10 border-red-100 dark:border-red-900/30'
+                                                            : 'bg-green-50 dark:bg-green-900/10 border-green-100 dark:border-green-900/30'
                                                             }`}>
                                                             <div className="flex items-center space-x-3">
                                                                 {lab.isAbnormal
