@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { selectUser } from '../store/slices/authSlice';
 import { dashboardAPI } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -16,12 +17,13 @@ import {
     Filler,
 } from 'chart.js';
 import { Line, Bar, Doughnut } from 'react-chartjs-2';
-import { IconDownload, IconAlertTriangle, IconCircleCheckFilled, IconCircle, IconVideo, IconPhone, IconActivity, IconBrain, IconHeartbeat } from '@tabler/icons-react';
+import { IconDownload, IconAlertTriangle, IconCircleCheckFilled, IconCircle, IconVideo, IconPhone, IconActivity, IconBrain, IconHeartbeat, IconArrowRight } from '@tabler/icons-react';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
 const Dashboard = () => {
     const user = useSelector(selectUser);
+    const navigate = useNavigate();
     const [summaryData, setSummaryData] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -54,14 +56,10 @@ const Dashboard = () => {
     };
 
     // 1. Line Chart Data (Health Trends / Risk Levels over time)
-    const trendLabels = summaryData?.healthTrends?.map(t => new Date(t.date).toLocaleDateString()) || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'];
+    const trendLabels = summaryData?.healthTrends?.map(t => t.month) || ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL'];
+
     // Convert risk levels to a numeric metric for the chart
-    const riskScores = summaryData?.healthTrends?.map(t => {
-        if (t.riskLevel === 'HIGH') return 8.0;
-        if (t.riskLevel === 'MEDIUM') return 6.0;
-        if (t.riskLevel === 'LOW') return 4.0;
-        return 5.5;
-    }) || [5.8, 6.1, 6.3, 6.0, 5.8, 5.9, 5.7];
+    const riskScores = summaryData?.healthTrends?.map(t => t.score / 10.0) || [5.8, 6.1, 6.3, 6.0, 5.8, 5.9, 5.7];
 
     const lineData = {
         labels: trendLabels,
@@ -194,17 +192,17 @@ const Dashboard = () => {
                 {/* Bottom Section (2 cols Desktop / 1 col Mobile) */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                    {/* Left Column: Recent Scans */}
+                    {/* Left Column: Recent Activities */}
                     <div className="lg:col-span-2 flex flex-col">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recent Scans</h3>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Recent Activities</h3>
                             <button className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors">View all</button>
                         </div>
 
                         <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
                             {/* Table Header Wrapper (Hidden on mobile) */}
                             <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-slate-100 dark:border-slate-700 text-xs font-bold text-slate-500 uppercase tracking-widest bg-slate-50/50 dark:bg-slate-900/50">
-                                <div className="col-span-5">Scan Type</div>
+                                <div className="col-span-5">Activity</div>
                                 <div className="col-span-3">Date</div>
                                 <div className="col-span-3">Doctor</div>
                                 <div className="col-span-1 text-center">Action</div>
@@ -212,20 +210,31 @@ const Dashboard = () => {
 
                             {/* List items */}
                             <div className="divide-y divide-slate-100 dark:divide-slate-700/50">
-                                {summaryData && summaryData.recentScans && summaryData.recentScans.length > 0 ? (
-                                    summaryData.recentScans.map((scan, idx) => (
-                                        <div key={idx} className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                {summaryData && summaryData.recentActivities && summaryData.recentActivities.length > 0 ? (
+                                    summaryData.recentActivities.map((activity, idx) => (
+                                        <div
+                                            key={idx}
+                                            onClick={() => {
+                                                if (activity.type === 'SCAN') navigate(`/scan-results/${activity.id}`);
+                                                else if (activity.type === 'REPORT') navigate(`/report-results/${activity.id}`);
+                                            }}
+                                            className="p-4 sm:p-6 flex flex-col sm:grid sm:grid-cols-12 sm:gap-4 sm:items-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
+                                        >
                                             <div className="col-span-5 flex items-center space-x-4 mb-3 sm:mb-0">
                                                 <div className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
                                                     <IconActivity className="text-blue-600 dark:text-blue-400" size={20} />
                                                 </div>
-                                                <span className="font-bold text-slate-900 dark:text-white">{scan.medicineName}</span>
+                                                <span className="font-bold text-slate-900 dark:text-white">{activity.title}</span>
                                             </div>
-                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">{new Date(scan.scannedAt).toLocaleDateString()}</div>
-                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">Scanned Medicine</div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-1 sm:mb-0 pl-16 sm:pl-0 font-medium">
+                                                {new Date(activity.date).toLocaleDateString()}
+                                            </div>
+                                            <div className="col-span-3 text-sm text-slate-600 dark:text-slate-400 mb-3 sm:mb-0 pl-16 sm:pl-0 font-medium">
+                                                {activity.source}
+                                            </div>
                                             <div className="col-span-1 flex justify-end sm:justify-center pr-2 sm:pr-0 mt-[-40px] sm:mt-0">
                                                 <button className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
-                                                    <IconDownload size={20} />
+                                                    <IconArrowRight size={20} />
                                                 </button>
                                             </div>
                                         </div>
