@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { IconArrowLeft, IconDownload, IconCircleCheckFilled, IconAlertTriangle, IconCircleX, IconCalendar, IconMapPin, IconSun, IconMoon, IconMessage, IconInfoCircle, IconPill, IconListDetails, IconShieldCheck, IconClock } from '@tabler/icons-react';
 import { scanAPI } from '../services/api';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 const ScanResult = () => {
     const location = useLocation();
     const navigate = useNavigate();
+    const { scanId } = useParams();
     const scannedData = location.state?.scannedData || 'Unknown code';
     const [scanResult, setScanResult] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -14,7 +17,14 @@ const ScanResult = () => {
     useEffect(() => {
         const fetchScanData = async () => {
             try {
-                const res = await scanAPI.scanBarcode(scannedData);
+                let res;
+                if (scanId) {
+                    res = await scanAPI.getById(scanId);
+                } else if (scannedData && scannedData !== 'Unknown code') {
+                    res = await scanAPI.scanBarcode(scannedData);
+                } else {
+                    res = { data: null };
+                }
                 setScanResult(res.data);
             } catch (err) {
                 console.error('Scan API error:', err);
@@ -23,7 +33,7 @@ const ScanResult = () => {
             }
         };
         fetchScanData();
-    }, [scannedData]);
+    }, [scanId, scannedData]);
 
     const medicineName = scanResult?.brand || 'Unknown Medicine';
     const genericName = scanResult?.generic || scannedData;
@@ -48,10 +58,53 @@ const ScanResult = () => {
     // Default fallback if parsing fails (meaning the AI didn't use the expected headers)
     const showRawExplanation = !parsedUsage && !parsedAlternatives && !parsedSafety;
 
+    const handleDownloadPDF = async () => {
+        const input = document.getElementById('pdf-content');
+        if (!input) return;
+
+        try {
+            const buttons = input.querySelectorAll('button');
+            buttons.forEach(b => b.style.display = 'none');
+
+            const canvas = await html2canvas(input, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: document.documentElement.classList.contains('dark') ? '#0b1121' : '#f8fafc'
+            });
+
+            buttons.forEach(b => b.style.display = '');
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+            let heightLeft = pdfHeight;
+            let position = 0;
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+            heightLeft -= pageHeight;
+
+            while (heightLeft >= 0) {
+                position = heightLeft - pdfHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                heightLeft -= pageHeight;
+            }
+
+            pdf.save(`${medicineName}_Scan_Result.pdf`);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            const buttons = input.querySelectorAll('button');
+            buttons.forEach(b => b.style.display = '');
+        }
+    };
+
     return (
         <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans pb-24 lg:pb-8">
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="pdf-content">
 
                 {/* Breadcrumb & Header */}
                 <div className="flex flex-col mb-8">
@@ -73,7 +126,7 @@ const ScanResult = () => {
                                 <IconMessage size={18} />
                                 <span>Chat with AI</span>
                             </button>
-                            <button className="flex items-center justify-center p-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                            <button onClick={handleDownloadPDF} className="flex items-center justify-center p-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                                 <IconDownload size={20} />
                             </button>
                         </div>
@@ -125,7 +178,7 @@ const ScanResult = () => {
                                         </div>
                                         <div className="flex items-center text-xs text-slate-500 font-medium">
                                             <IconMapPin size={14} className="mr-2 opacity-70" />
-                                            Barcode: {scannedData}
+                                            Barcode: {scanId ? 'Retrieved from History' : scannedData}
                                         </div>
                                     </div>
                                 </div>
