@@ -1,27 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { IconMenu, IconX, IconUser, IconMoon, IconSun, IconBell } from '@tabler/icons-react';
 import { notificationAPI } from '../../services/api';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectIsAuthenticated } from '../../store/slices/authSlice';
+import { selectIsAuthenticated, loginSuccess } from '../../store/slices/authSlice';
 import { logout } from '../../store/slices/authSlice';
+import { profileAPI } from '../../services/api';
 
 const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
     const { theme, toggleTheme } = useTheme();
     const location = useLocation();
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [notificationsOpen, setNotificationsOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
+    const { user: authUser, token } = useSelector((state) => state.auth);
+
+    const [user, setUser] = useState({
+        avatar: authUser?.profileImage ? `data:image/jpeg;base64,${authUser.profileImage}` : null
+    });
 
     // Use Redux state for authentication
     const isLoggedIn = useSelector(selectIsAuthenticated);
 
     useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const res = await profileAPI.getProfile();
+                const fetchedUser = res.data;
+                setUser({
+                    avatar: fetchedUser.profileImage ? `data:image/jpeg;base64,${fetchedUser.profileImage}` : null
+                });
+                dispatch(loginSuccess({ user: fetchedUser, token }));
+            } catch (err) {
+                console.error("Failed to fetch user profile", err);
+            }
+        };
         if (isLoggedIn) {
+            fetchUserData();
             fetchNotifications();
         }
-    }, [isLoggedIn]);
+    }, [isLoggedIn, dispatch, token]);
 
     const fetchNotifications = async () => {
         try {
@@ -33,10 +53,10 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
     };
 
     const handleMarkAllRead = async () => {
-        if (notifications.length === 0 || !notifications.some(n => n.unread)) return;
+        if (notifications.length === 0 || !notifications.some(n => !n.isRead)) return;
         try {
-            await notificationAPI.markAllRead();
-            setNotifications(notifications.map(n => ({ ...n, unread: false })));
+            await notificationAPI.markRead();
+            setNotifications(notifications.map(n => ({ ...n, isRead: true })));
         } catch (err) {
             console.error("Failed to mark notifications read", err);
         }
@@ -109,7 +129,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                         className="relative p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors focus:outline-none"
                                     >
                                         <IconBell size={24} />
-                                        {notifications.some(n => n.unread) && (
+                                        {notifications.some(n => !n.isRead) && (
                                             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
                                         )}
                                     </button>
@@ -118,7 +138,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                         <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-xl shadow-lg shadow-slate-200/50 dark:shadow-black/50 border border-slate-100 dark:border-slate-700 overflow-hidden z-50">
                                             <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
                                                 <h3 className="font-semibold text-slate-900 dark:text-white">Notifications</h3>
-                                                {notifications.some(n => n.unread) && (
+                                                {notifications.some(n => !n.isRead) && (
                                                     <button onClick={handleMarkAllRead} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">Mark all read</button>
                                                 )}
                                             </div>
@@ -127,9 +147,17 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                                     <div className="p-4 text-center text-sm text-slate-500">No new notifications</div>
                                                 ) : (
                                                     notifications.map(notification => (
-                                                        <div key={notification.id} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors ${notification.unread ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}>
+                                                        <div
+                                                            key={notification.id}
+                                                            className={`px-4 py-3 border-b border-slate-50 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer ${!notification.isRead ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}
+                                                            onClick={() => {
+                                                                if (notification.type === 'REPORT' && notification.referenceId) navigate(`/report-results/${notification.referenceId}`);
+                                                                else if (notification.type === 'SCAN' && notification.referenceId) navigate(`/scan-results/${notification.referenceId}`);
+                                                                setNotificationsOpen(false);
+                                                            }}
+                                                        >
                                                             <div className="flex justify-between items-start mb-1">
-                                                                <span className={`text-sm font-semibold ${notification.unread ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>{notification.title}</span>
+                                                                <span className={`text-sm font-semibold ${!notification.isRead ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>{notification.title}</span>
                                                                 <span className="text-xs text-slate-500 dark:text-slate-500">{notification.time}</span>
                                                             </div>
                                                             <p className="text-sm text-slate-600 dark:text-slate-400">{notification.message}</p>
@@ -145,7 +173,12 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                 </div>
 
                                 <Link to="/profile" className="w-9 h-9 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm transition-transform hover:scale-105">
-                                    <IconUser size={18} className="text-slate-500 dark:text-slate-400" />
+                                    {user.avatar ? (
+                                        <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <IconUser size={18} className="text-slate-500 dark:text-slate-400" />
+                                    )}
+
                                 </Link>
                             </div>
                         )}
@@ -174,7 +207,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                             className="relative p-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
                         >
                             <IconBell size={24} />
-                            {notifications.some(n => n.unread) && (
+                            {notifications.some(n => !n.isRead) && (
                                 <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900"></span>
                             )}
                         </button>
