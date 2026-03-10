@@ -36,6 +36,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/scanner" element={<Scanner />} />
             <Route path="/scan-result" element={<ScanResult />} />
+            <Route path="/scan-results/:scanId" element={<ScanResult />} />
             <Route path="/reports" element={<ReportUpload />} />
             <Route path="/report-results/:reportId" element={<ReportResults />} />
             <Route path="/chat" element={<Chatbot />} />
