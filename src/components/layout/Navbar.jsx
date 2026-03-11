@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
-import { IconMenu, IconX, IconUser, IconMoon, IconSun, IconBell } from '@tabler/icons-react';
+import { IconMenu2, IconX, IconUser, IconMoon, IconSun, IconBell } from '@tabler/icons-react';
 import { notificationAPI } from '../../services/api';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectIsAuthenticated, loginSuccess } from '../../store/slices/authSlice';
@@ -215,7 +215,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className="inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white focus:outline-none"
                         >
-                            {mobileMenuOpen ? <IconX size={24} /> : <IconMenu size={24} />}
+                            {mobileMenuOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
                         </button>
                     </div>
                 </div>

@@ -49,6 +49,7 @@ const Settings = () => {
                                             <p className="text-sm text-slate-500 dark:text-slate-400">Select your preferred language</p>
                                         </div>
                                     </div>
+                                    {/* Language selctor div */}
                                     <select className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white rounded-lg px-3 py-1.5 outline-none focus:ring-2 focus:ring-emerald-500 text-sm">
                                         <option value="en">English</option>
                                         <option value="hi">Hindi (हिंदी)</option>
