@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
     IconArrowLeft, IconDownload, IconCircleCheckFilled, IconAlertTriangle,
-    IconCircleX, IconCalendar, IconBrain, IconActivity, IconRefresh
+    IconCircleX, IconCalendar, IconBrain, IconActivity, IconRefresh, IconEdit, IconCheck, IconPlus, IconTrash
 } from '@tabler/icons-react';
 import { reportAPI } from '../services/api';
 import MarkdownRenderer from '../components/MarkdownRenderer';
@@ -22,11 +22,19 @@ const ReportResults = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [polling, setPolling] = useState(false);
+    
+    // For confirmation step
+    const [editableValues, setEditableValues] = useState([]);
+    const [submittingTarget, setSubmittingTarget] = useState(false);
 
     const fetchReport = async () => {
         try {
             const res = await reportAPI.getById(reportId);
             setData(res.data);
+            
+            if (res.data.status === 'AWAITING_CONFIRMATION') {
+                setEditableValues(res.data.extractedValues || []);
+            }
 
             // If still processing, poll every 5 seconds
             if (res.data.status === 'PROCESSING') {
@@ -38,6 +46,7 @@ const ReportResults = () => {
         } catch (err) {
             setError('Could not load report. It may still be processing.');
             setLoading(false);
+            setPolling(false);
         }
     };
 
@@ -51,6 +60,35 @@ const ReportResults = () => {
         const interval = setInterval(fetchReport, 5000);
         return () => clearInterval(interval);
     }, [polling]);
+
+    const handleConfirmValues = async () => {
+        setSubmittingTarget(true);
+        try {
+            const res = await reportAPI.analyze(reportId, editableValues);
+            setData(res.data);
+            setSubmittingTarget(false);
+        } catch (err) {
+            console.error('Failed to confirm values', err);
+            alert('Failed to analyze the confirmed values. Please try again.');
+            setSubmittingTarget(false);
+        }
+    };
+
+    const updateEditableValue = (index, field, value) => {
+        const newValues = [...editableValues];
+        newValues[index][field] = value;
+        setEditableValues(newValues);
+    };
+
+    const removeEditableValue = (index) => {
+        const newValues = [...editableValues];
+        newValues.splice(index, 1);
+        setEditableValues(newValues);
+    };
+
+    const addEditableValue = () => {
+        setEditableValues([...editableValues, { testName: '', value: '', unit: '' }]);
+    };
 
     const result = data?.result;
     const riskLevel = result?.riskLevel || 'LOW';
@@ -134,6 +172,96 @@ const ReportResults = () => {
         );
     }
 
+    if (data?.status === 'FAILED_EXTRACTION') {
+        return (
+            <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans flex items-center justify-center p-4">
+                <div className="max-w-md w-full text-center bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
+                    <IconCircleX size={56} className="text-red-500 mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Extraction Failed</h2>
+                    <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">
+                        We couldn't confidently read the test values from your uploaded file. It might be blurry, handwritten, or not a standard lab report.
+                    </p>
+                    <div className="space-y-3">
+                        <button onClick={() => navigate('/reports')} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors">
+                            Try Another File
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (data?.status === 'AWAITING_CONFIRMATION') {
+        return (
+            <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans py-8">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6">
+                    <div className="mb-8">
+                        <button onClick={() => navigate('/reports')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition mb-4">
+                            <IconArrowLeft size={20} />
+                        </button>
+                        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Verify Extracted Data</h1>
+                        <p className="text-slate-500 dark:text-slate-400 mt-2">
+                            Please review the values we extracted from your report. Correct any mistakes or add missing values before we analyze the results.
+                        </p>
+                    </div>
+
+                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <div className="p-6 overflow-x-auto">
+                            <table className="w-full min-w-[500px]">
+                                <thead>
+                                    <tr className="text-left border-b-2 border-slate-200 dark:border-slate-700">
+                                        <th className="pb-3 text-sm font-bold text-slate-500 w-1/3">Test Name</th>
+                                        <th className="pb-3 text-sm font-bold text-slate-500 w-1/4">Value</th>
+                                        <th className="pb-3 text-sm font-bold text-slate-500 w-1/4">Unit</th>
+                                        <th className="pb-3 w-12"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {editableValues.map((ev, i) => (
+                                        <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50">
+                                            <td className="py-3">
+                                                <input type="text" value={ev.testName} onChange={e => updateEditableValue(i, 'testName', e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Hemoglobin" />
+                                            </td>
+                                            <td className="py-3 px-2">
+                                                <input type="number" step="any" value={ev.value} onChange={e => updateEditableValue(i, 'value', e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.0" />
+                                            </td>
+                                            <td className="py-3 px-2">
+                                                <input type="text" value={ev.unit} onChange={e => updateEditableValue(i, 'unit', e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="g/dL" />
+                                            </td>
+                                            <td className="py-3 text-right">
+                                                <button onClick={() => removeEditableValue(i)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">
+                                                    <IconTrash size={18} />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            
+                            <div className="mt-4">
+                                <button onClick={addEditableValue} className="flex items-center text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition">
+                                    <IconPlus size={16} className="mr-1" /> Add Value
+                                </button>
+                            </div>
+                        </div>
+                        <div className="bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">
+                                By confirming, you agree that these measurements are accurate for final AI assessment.
+                            </p>
+                            <button
+                                onClick={handleConfirmValues}
+                                disabled={submittingTarget || editableValues.length === 0}
+                                className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl font-bold font-sans transition shadow-sm flex items-center justify-center"
+                            >
+                                {submittingTarget ? 'Analyzing...' : <><IconCheck size={18} className="mr-2" /> Confirm & Analyze</>}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    
     return (
         <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans pb-24 lg:pb-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="pdf-content">
@@ -200,22 +328,26 @@ const ReportResults = () => {
                                     <table className="w-full text-sm">
                                         <thead>
                                             <tr className="border-b border-slate-100 dark:border-slate-700">
-                                                <th className="text-left py-2 px-3 text-slate-500 font-semibold">Test</th>
+                                                <th className="text-left py-2 px-3 text-slate-500 font-semibold">Test Name</th>
                                                 <th className="text-left py-2 px-3 text-slate-500 font-semibold">Value</th>
-                                                <th className="text-left py-2 px-3 text-slate-500 font-semibold">Normal Range</th>
+                                                <th className="text-left py-2 px-3 text-slate-500 font-semibold">Unit</th>
+                                                <th className="text-left py-2 px-3 text-slate-500 font-semibold">Reference Range</th>
                                                 <th className="text-left py-2 px-3 text-slate-500 font-semibold">Status</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                                             {testValues.map((tv, i) => {
-                                                const statusColor = tv.status === 'High' ? 'text-red-500' :
-                                                    tv.status === 'Low' ? 'text-amber-500' : 'text-emerald-500';
+                                                const statusKey = tv.status ? tv.status.toUpperCase() : 'UNKNOWN';
+                                                const statusColor = statusKey === 'HIGH' ? 'text-orange-500' :
+                                                    statusKey === 'LOW' ? 'text-red-500' : 
+                                                    statusKey === 'NORMAL' ? 'text-emerald-500' : 'text-slate-500';
                                                 return (
                                                     <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
-                                                        <td className="py-3 px-3 font-medium text-slate-900 dark:text-white">{tv.name}</td>
-                                                        <td className="py-3 px-3 text-slate-600 dark:text-slate-300">{tv.value}</td>
-                                                        <td className="py-3 px-3 text-slate-500">{tv.normalRange}</td>
-                                                        <td className={`py-3 px-3 font-bold ${statusColor}`}>{tv.status}</td>
+                                                        <td className="py-3 px-3 font-bold text-slate-900 dark:text-white">{tv.name}</td>
+                                                        <td className="py-3 px-3 text-slate-600 dark:text-slate-300 font-semibold text-lg">{tv.value}</td>
+                                                        <td className="py-3 px-3 text-slate-500">{tv.unit || '-'}</td>
+                                                        <td className="py-3 px-3 text-slate-500 whitespace-nowrap">{tv.normalRange}</td>
+                                                        <td className={`py-3 px-3 font-extrabold tracking-wide ${statusColor}`}>{statusKey}</td>
                                                     </tr>
                                                 );
                                             })}
