@@ -303,21 +303,60 @@ const Dashboard = () => {
 
                         <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Health Alerts</h3>
 
-                        {/* Vaccination Alert */}
-                        <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 rounded-3xl p-6">
-                            <div className="flex items-start space-x-4">
-                                <IconAlertTriangle size={24} className="text-amber-600 dark:text-amber-500 shrink-0 mt-1" />
-                                <div>
-                                    <h4 className="font-bold text-amber-900 dark:text-amber-500 mb-1 text-sm">Upcoming Vaccination</h4>
-                                    <p className="text-xs text-amber-800 dark:text-amber-600/80 leading-relaxed mb-3">
-                                        Flu shot due by Oct 30. Please schedule an appointment.
-                                    </p>
-                                    <button className="text-sm font-bold text-amber-700 dark:text-amber-500 underline decoration-2 underline-offset-4 hover:text-amber-800 transition-colors">
-                                        Schedule Now
-                                    </button>
+                        {/* Dynamic Latest Report Alert */}
+                        {summaryData?.latestReport ? (
+                            <div className={`rounded-3xl p-6 border shadow-sm ${
+                                summaryData.latestReport.riskLevel === 'HIGH' ? 'bg-red-50 border-red-100 dark:bg-red-900/10 dark:border-red-900/30' :
+                                summaryData.latestReport.riskLevel === 'MEDIUM' ? 'bg-amber-50 border-amber-100 dark:bg-amber-900/10 dark:border-amber-900/30' :
+                                'bg-emerald-50 border-emerald-100 dark:bg-emerald-900/10 dark:border-emerald-900/30'
+                            }`}>
+                                <div className="flex items-start space-x-4">
+                                    <IconAlertTriangle size={24} className={`shrink-0 mt-1 ${
+                                        summaryData.latestReport.riskLevel === 'HIGH' ? 'text-red-500' :
+                                        summaryData.latestReport.riskLevel === 'MEDIUM' ? 'text-amber-500' :
+                                        'text-emerald-500'
+                                    }`} />
+                                    <div>
+                                        <h4 className={`font-bold text-sm mb-1 ${
+                                            summaryData.latestReport.riskLevel === 'HIGH' ? 'text-red-900 dark:text-red-400' :
+                                            summaryData.latestReport.riskLevel === 'MEDIUM' ? 'text-amber-900 dark:text-amber-400' :
+                                            'text-emerald-900 dark:text-emerald-400'
+                                        }`}>Latest Report: {summaryData.latestReport.riskLevel} Risk Assessment</h4>
+                                        <p className={`text-xs leading-relaxed mb-3 font-medium ${
+                                            summaryData.latestReport.riskLevel === 'HIGH' ? 'text-red-800 dark:text-red-300' :
+                                            summaryData.latestReport.riskLevel === 'MEDIUM' ? 'text-amber-800 dark:text-amber-300' :
+                                            'text-emerald-800 dark:text-emerald-300'
+                                        }`}>
+                                            {summaryData.latestReport.abnormalValues?.length > 0 
+                                                ? `Abnormal values detected: ${summaryData.latestReport.abnormalValues.join(', ')}.`
+                                                : "All tested values are within normal healthy ranges. Keep it up!"}
+                                        </p>
+                                        <button onClick={() => navigate(`/report-results/${summaryData.latestReport.id}`)} className={`text-sm font-bold underline decoration-2 underline-offset-4 transition-colors ${
+                                            summaryData.latestReport.riskLevel === 'HIGH' ? 'text-red-700 dark:text-red-500 hover:text-red-800' :
+                                            summaryData.latestReport.riskLevel === 'MEDIUM' ? 'text-amber-700 dark:text-amber-500 hover:text-amber-800' :
+                                            'text-emerald-700 dark:text-emerald-500 hover:text-emerald-800'
+                                        }`}>
+                                            View Report Summary
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-3xl p-6 shadow-sm">
+                                <div className="flex items-start space-x-4">
+                                    <IconAlertTriangle size={24} className="text-slate-400 shrink-0 mt-1" />
+                                    <div>
+                                        <h4 className="font-bold text-slate-700 dark:text-slate-300 mb-1 text-sm">No Recent Reports</h4>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
+                                            Upload your first medical report to see personalized health alerts here.
+                                        </p>
+                                        <button onClick={() => navigate('/reports')} className="text-sm font-bold text-blue-600 dark:text-blue-400 underline decoration-2 underline-offset-4 hover:text-blue-700 transition-colors">
+                                            Upload Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Daily Checklist */}
                         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
