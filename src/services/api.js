@@ -66,6 +66,7 @@ export const reportAPI = {
   },
   getById: (id) => api.get(`/reports/${id}`),
   getMine: () => api.get('/reports/my'),
+  analyze: (id, values) => api.post(`/reports/${id}/analyze`, { values })
 };
 
 // ── Scans ─────────────────────────────────────────────
