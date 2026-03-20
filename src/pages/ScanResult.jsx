@@ -3,6 +3,11 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { IconArrowLeft, IconDownload, IconCircleCheckFilled, IconAlertTriangle, IconCircleX, IconCalendar, IconMapPin, IconSun, IconMoon, IconMessage, IconInfoCircle, IconPill, IconListDetails, IconShieldCheck, IconClock } from '@tabler/icons-react';
 import { scanAPI } from '../services/api';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import DosageSafety from '../components/scan/DosageSafety';
+import UsageGuide from '../components/scan/UsageGuide';
+import SideEffectsPanel from '../components/scan/SideEffectsPanel';
+import ScanWarnings from '../components/scan/ScanWarnings';
+import Alternatives from '../components/scan/Alternatives';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -42,21 +47,7 @@ const ScanResult = () => {
     const hasNsqAlert = scanResult?.nsqAlert || false;
     const description = scanResult?.description || 'A commonly used prescription medication.';
 
-    // Helper to extract sections from AI Markdown based on headers
-    const extractSection = (text, headerKeyword) => {
-        if (!text) return null;
-        const regex = new RegExp(`(?:##?|\\*\\*)\\s*.*?${headerKeyword}.*?(?:\\*\\*|\\n)([\\s\\S]*?)(?=(?:##?|\\*\\*)\\s*.*?\\w|$)`, 'i');
-        const match = text.match(regex);
-        return match && match[1] ? match[1].trim() : null;
-    };
-
-    const parsedUsage = extractSection(aiExplanation, 'Usage') || extractSection(aiExplanation, 'Instructions');
-    const parsedAlternatives = extractSection(aiExplanation, 'Alternative') || extractSection(aiExplanation, 'Substitute');
-    const parsedSchedule = extractSection(aiExplanation, 'Schedule') || extractSection(aiExplanation, 'Timing');
-    const parsedSafety = extractSection(aiExplanation, 'Risk') || extractSection(aiExplanation, 'Safety') || extractSection(aiExplanation, 'Side Effect');
-
-    // Default fallback if parsing fails (meaning the AI didn't use the expected headers)
-    const showRawExplanation = !parsedUsage && !parsedAlternatives && !parsedSafety;
+    const showRawExplanation = !scanResult?.usageGuide && !scanResult?.alternatives && !scanResult?.sideEffects;
 
     const handleDownloadPDF = async () => {
         const input = document.getElementById('pdf-content');
@@ -251,42 +242,20 @@ const ScanResult = () => {
                                 </div>
                             )}
 
-                            {/* == NEW PARSED CARDS FROM AI EXPLANATION == */}
-                            {parsedUsage && (
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                                        <IconListDetails size={20} className="text-blue-500 mr-2" />
-                                        Usage Instructions
-                                    </h3>
-                                    <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                                        <MarkdownRenderer content={parsedUsage} />
-                                    </div>
-                                </div>
-                            )}
+                            {/* == NEW CARDS FROM RULE ENGINE == */}
+                            <DosageSafety dosage={scanResult?.dosageSafety} />
+                            
+                            <ScanWarnings 
+                                contraindications={scanResult?.contraindications}
+                                interactions={scanResult?.interactionWarnings}
+                                crossAnalysis={scanResult?.crossAnalysisWarnings} 
+                            />
 
-                            {parsedSafety && (
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-red-100 dark:border-red-900/50">
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                                        <IconShieldCheck size={20} className="text-red-500 mr-2" />
-                                        Safety & Side Effects
-                                    </h3>
-                                    <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                                        <MarkdownRenderer content={parsedSafety} />
-                                    </div>
-                                </div>
-                            )}
+                            <SideEffectsPanel effects={scanResult?.sideEffects} />
 
-                            {parsedAlternatives && (
-                                <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-emerald-100 dark:border-emerald-900/50">
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                                        <IconPill size={20} className="text-emerald-500 mr-2" />
-                                        Alternative Medicines
-                                    </h3>
-                                    <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                                        <MarkdownRenderer content={parsedAlternatives} />
-                                    </div>
-                                </div>
-                            )}
+                            <UsageGuide guide={scanResult?.usageGuide} />
+
+                            <Alternatives alternatives={scanResult?.alternatives} />
 
                         </div>
 
@@ -299,11 +268,7 @@ const ScanResult = () => {
                                     Medication Schedule
                                 </h3>
 
-                                {parsedSchedule && (
-                                    <div className="mb-4 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 text-sm text-indigo-900 dark:text-indigo-300">
-                                        <MarkdownRenderer content={parsedSchedule} />
-                                    </div>
-                                )}
+                                {/* Placeholder for schedule items */}
                                 <div className="space-y-3 mb-6">
                                     <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
                                         <div className="flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300">
