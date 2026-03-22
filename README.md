@@ -81,6 +81,11 @@ MediCare-frontend/
     ```
     The app will be available at `http://localhost:5173`.
 
+5.  **Build Development Server**:
+    ```bash
+    npm run build
+    ```
+
 ---
 
 ## 📜 Available Scripts
