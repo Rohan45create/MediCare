@@ -26,7 +26,7 @@ const ReportResults = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [polling, setPolling] = useState(false);
+    const [progressMsg, setProgressMsg] = useState('Initializing AI analysis...');
     
     // For confirmation step
     const [editableValues, setEditableValues] = useState([]);
@@ -41,30 +41,43 @@ const ReportResults = () => {
                 setEditableValues(res.data.extractedValues || []);
             }
 
-            // If still processing, poll every 5 seconds
-            if (res.data.status === 'PROCESSING') {
-                setPolling(true);
-            } else {
-                setPolling(false);
+            // Polling is no longer needed, SSE handles it.
+            if (res.data.status !== 'PROCESSING' && res.data.status !== 'OCR_PROCESSING') {
                 setLoading(false);
             }
         } catch (err) {
             setError('Could not load report. It may still be processing.');
             setLoading(false);
-            setPolling(false);
         }
     };
 
     useEffect(() => {
+        if (!reportId) return;
         fetchReport();
-    }, [reportId]);
 
-    // Poll every 5s if still processing
-    useEffect(() => {
-        if (!polling) return;
-        const interval = setInterval(fetchReport, 5000);
-        return () => clearInterval(interval);
-    }, [polling]);
+        const token = localStorage.getItem('token');
+        const sseUrl = `${import.meta.env.VITE_API_URL || 'http://localhost:8080'}/api/reports/stream/${reportId}?token=${token}`;
+        
+        const eventSource = new EventSource(sseUrl);
+        
+        eventSource.addEventListener('STATUS_UPDATE', (e) => {
+            console.log('Backend Status:', e.data);
+            if (['FAILED', 'EXTRACTION_DONE', 'AWAITING_CONFIRMATION', 'COMPLETED', 'ANALYSIS_DONE'].includes(e.data)) {
+                fetchReport();
+            }
+        });
+        
+        eventSource.addEventListener('PROGRESS_UPDATE', (e) => {
+            setProgressMsg(e.data);
+        });
+        
+        eventSource.onerror = (err) => {
+            console.error('SSE Error. Connection may have dropped or completed.', err);
+            eventSource.close();
+        };
+
+        return () => eventSource.close();
+    }, [reportId]);
 
     const handleConfirmValues = async () => {
         setSubmittingTarget(true);
@@ -151,8 +164,8 @@ const ReportResults = () => {
                 <div className="text-center">
                     <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Analyzing Your Report</h2>
-                    <p className="text-slate-500 dark:text-slate-400">Our AI is reading and extracting insights from your report...</p>
-                    <p className="text-xs text-slate-400 mt-2">This may take 20-60 seconds</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">{progressMsg}</p>
+                    <p className="text-xs text-slate-400 mt-3 animate-pulse">Establishing secure connection and processing heavily...</p>
                 </div>
             </div>
         );
@@ -193,70 +206,94 @@ const ReportResults = () => {
     }
 
     if (data?.status === 'AWAITING_CONFIRMATION') {
+        const rawText = data?.result?.extractedText || 'No raw text available from OCR scan. Please review values manually.';
+        
         return (
             <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans py-8">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                    <div className="mb-8">
-                        <button onClick={() => navigate('/reports')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition mb-4">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="mb-6 flex items-center space-x-4">
+                        <button onClick={() => navigate('/reports')} className="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-50 transition">
                             <IconArrowLeft size={20} />
                         </button>
-                        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Verify Extracted Data</h1>
-                        <p className="text-slate-500 dark:text-slate-400 mt-2">
-                            Please review the values we extracted from your report. Correct any mistakes or add missing values before we analyze the results.
-                        </p>
+                        <div>
+                            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Verify Extracted Data</h1>
+                            <p className="text-slate-500 dark:text-slate-400 mt-1">
+                                Check the raw OCR output on the left and correct the extracted values on the right.
+                            </p>
+                        </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                        <div className="p-6 overflow-x-auto">
-                            <table className="w-full min-w-[500px]">
-                                <thead>
-                                    <tr className="text-left border-b-2 border-slate-200 dark:border-slate-700">
-                                        <th className="pb-3 text-sm font-bold text-slate-500 w-1/3">Test Name</th>
-                                        <th className="pb-3 text-sm font-bold text-slate-500 w-1/4">Value</th>
-                                        <th className="pb-3 text-sm font-bold text-slate-500 w-1/4">Unit</th>
-                                        <th className="pb-3 w-12"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {editableValues.map((ev, i) => (
-                                        <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50">
-                                            <td className="py-3">
-                                                <input type="text" value={ev.testName} onChange={e => updateEditableValue(i, 'testName', e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Hemoglobin" />
-                                            </td>
-                                            <td className="py-3 px-2">
-                                                <input type="number" step="any" value={ev.value} onChange={e => updateEditableValue(i, 'value', e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0.0" />
-                                            </td>
-                                            <td className="py-3 px-2">
-                                                <input type="text" value={ev.unit} onChange={e => updateEditableValue(i, 'unit', e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-2 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="g/dL" />
-                                            </td>
-                                            <td className="py-3 text-right">
-                                                <button onClick={() => removeEditableValue(i)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">
-                                                    <IconTrash size={18} />
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* LEFT: Raw Text Panel */}
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[70vh]">
+                            <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex items-center bg-slate-50 dark:bg-slate-900/50 rounded-t-3xl">
+                                <IconBrain size={20} className="text-indigo-500 mr-2" />
+                                <h2 className="font-bold text-slate-800 dark:text-slate-200">Raw Document Text</h2>
+                            </div>
+                            <div className="p-6 overflow-y-auto flex-1 font-mono text-xs text-slate-600 dark:text-slate-400 whitespace-pre-wrap leading-relaxed">
+                                {rawText}
+                            </div>
+                        </div>
+
+                        {/* RIGHT: Editable Values */}
+                        <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col h-[70vh]">
+                            <div className="p-5 border-b border-slate-200 dark:border-slate-700 flex items-center bg-slate-50 dark:bg-slate-900/50 rounded-t-3xl">
+                                <IconEdit size={20} className="text-blue-500 mr-2" />
+                                <h2 className="font-bold text-slate-800 dark:text-slate-200">Edit Extracted Values</h2>
+                            </div>
                             
-                            <div className="mt-4">
-                                <button onClick={addEditableValue} className="flex items-center text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition">
-                                    <IconPlus size={16} className="mr-1" /> Add Value
+                            <div className="p-0 overflow-y-auto flex-1">
+                                <table className="w-full min-w-[400px]">
+                                    <thead className="sticky top-0 bg-white dark:bg-slate-800 shadow-sm">
+                                        <tr className="text-left border-b border-slate-200 dark:border-slate-700">
+                                            <th className="px-5 py-3 text-xs uppercase tracking-wider font-bold text-slate-500 w-2/5">Test Name</th>
+                                            <th className="px-2 py-3 text-xs uppercase tracking-wider font-bold text-slate-500 w-1/4">Value</th>
+                                            <th className="px-2 py-3 text-xs uppercase tracking-wider font-bold text-slate-500 w-1/4">Unit</th>
+                                            <th className="px-5 py-3 w-12 text-center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {editableValues.map((ev, i) => (
+                                            <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                <td className="py-2 px-5">
+                                                    <input type="text" value={ev.testName} onChange={e => updateEditableValue(i, 'testName', e.target.value)} className="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:outline-none py-1 text-sm font-semibold text-slate-800 dark:text-white transition-colors" placeholder="e.g. Hemoglobin" />
+                                                </td>
+                                                <td className="py-2 px-2">
+                                                    <input type="number" step="any" value={ev.value} onChange={e => updateEditableValue(i, 'value', e.target.value)} className="w-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md px-2 py-1.5 text-sm text-slate-800 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono" placeholder="0.0" />
+                                                </td>
+                                                <td className="py-2 px-2">
+                                                    <input type="text" value={ev.unit} onChange={e => updateEditableValue(i, 'unit', e.target.value)} className="w-full bg-transparent border-b border-transparent focus:border-blue-500 focus:outline-none py-1 text-xs text-slate-500 dark:text-slate-400 transition-colors" placeholder="g/dL" />
+                                                </td>
+                                                <td className="py-2 px-5 text-right">
+                                                    <button onClick={() => removeEditableValue(i)} className="p-1.5 text-slate-400 hover:text-red-500 bg-transparent hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition opacity-0 flex-shrink-0 group-hover:opacity-100">
+                                                        <IconTrash size={16} />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <div className="p-5 border-t border-slate-100 dark:border-slate-700/50">
+                                    <button onClick={addEditableValue} className="flex items-center text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-transparent">
+                                        <IconPlus size={16} className="mr-2" /> Add Missing Test
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div className="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700 p-5 rounded-b-3xl flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0">
+                                <p className="text-xs text-slate-500 dark:text-slate-400 text-center sm:text-left hidden sm:block max-w-[200px]">
+                                    Review data carefully before AI interpretation.
+                                </p>
+                                <button
+                                    onClick={handleConfirmValues}
+                                    disabled={submittingTarget || editableValues.length === 0}
+                                    className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl font-bold font-sans transition shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.23)] flex items-center justify-center shrink-0"
+                                >
+                                    {submittingTarget ? 'Analyzing...' : <><IconCheck size={18} className="mr-2" /> Confirm & Analyze</>}
                                 </button>
                             </div>
                         </div>
-                        <div className="bg-slate-50 dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <p className="text-sm text-slate-500 dark:text-slate-400 text-center sm:text-left">
-                                By confirming, you agree that these measurements are accurate for final AI assessment.
-                            </p>
-                            <button
-                                onClick={handleConfirmValues}
-                                disabled={submittingTarget || editableValues.length === 0}
-                                className="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl font-bold font-sans transition shadow-sm flex items-center justify-center"
-                            >
-                                {submittingTarget ? 'Analyzing...' : <><IconCheck size={18} className="mr-2" /> Confirm & Analyze</>}
-                            </button>
-                        </div>
+
                     </div>
                 </div>
             </div>

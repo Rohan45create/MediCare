@@ -18,6 +18,7 @@ const ScanResult = () => {
     const scannedData = location.state?.scannedData || 'Unknown code';
     const [scanResult, setScanResult] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchScanData = async () => {
@@ -33,6 +34,7 @@ const ScanResult = () => {
                 setScanResult(res.data);
             } catch (err) {
                 console.error('Scan API error:', err);
+                setError(err.response?.data?.error || "We couldn't find this medicine in our database. It might be an unregistered brand or a non-medical barcode.");
             } finally {
                 setLoading(false);
             }
@@ -132,7 +134,25 @@ const ScanResult = () => {
                     </div>
                 )}
 
-                {!loading && (
+                {!loading && error && (
+                    <div className="flex flex-col items-center justify-center p-12 text-center mt-8">
+                        <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-6 shadow-inner border border-red-200 dark:border-red-900/50">
+                            <IconAlertTriangle size={40} className="text-red-500" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">Scan Failed</h2>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-md mb-8">{error}</p>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            <button onClick={() => navigate('/scansense')} className="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors shadow-sm">
+                                Try Scanning Again
+                            </button>
+                            <button onClick={() => navigate('/chatbot')} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors shadow-md">
+                                Ask AI Assistant Instead
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {!loading && !error && (
                     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6">
 
                         {/* == MOBILE 1 | DESKTOP LEFT == Primary Medicine Card */}

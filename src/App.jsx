@@ -18,6 +18,7 @@ import Chatbot from './pages/Chatbot';
 import HealthHistory from './pages/HealthHistory';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
+import HelpPage from './pages/HelpPage';
 
 function App() {
   return (
@@ -43,6 +44,8 @@ function App() {
             <Route path="/history" element={<HealthHistory />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/profile" element={<Profile />} />
+            
+            <Route path="/help" element={<HelpPage />} />
 
             {/* Fallback routing */}
             <Route path="*" element={<Navigate to="/" replace />} />

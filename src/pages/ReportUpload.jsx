@@ -37,7 +37,12 @@ const ReportUpload = () => {
                 navigate(`/report-results/${reportId}`);
             }, 1200);
         } catch (err) {
-            setError(err.response?.data?.error || 'Upload failed. Please try again.');
+            const status = err.response?.status;
+            if (status === 429) {
+                setError('Too many requests. You have reached your scan limit for now. Please wait a moment and retry.');
+            } else {
+                setError(err.response?.data?.error || 'Upload failed. Please try again later.');
+            }
             setIsUploading(false);
         }
     };
