@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+    const { t } = useTranslation('common');
     return (
         <footer className="bg-white dark:bg-[#0b1121] border-t border-slate-200 dark:border-slate-800 py-12 lg:py-16 mt-auto">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
@@ -15,7 +17,7 @@ const Footer = () => {
                         </span>
                     </Link>
                     <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed mb-6">
-                        Your trusted AI health companion. We prioritize accuracy, security, and accessibility in healthcare for all generations.
+                        {t('footer.brand.description')}
                     </p>
                     <div className="flex space-x-3">
                         <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400">🌐</div>
@@ -25,34 +27,34 @@ const Footer = () => {
                 </div>
 
                 <div className="pt-2 md:pt-0">
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">Product</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">{t('footer.product.heading')}</h4>
                     <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                        <li><Link to="/scanner" className="hover:text-blue-600 transition-colors">Medicine Scanner</Link></li>
-                        <li><Link to="/reports" className="hover:text-blue-600 transition-colors">Report Analysis</Link></li>
-                        <li><Link to="/dashboard" className="hover:text-blue-600 transition-colors">AI Health Chatbot</Link></li>
-                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">Drug Verification</span></li>
+                        <li><Link to="/scanner" className="hover:text-blue-600 transition-colors">{t('footer.product.link_1')}</Link></li>
+                        <li><Link to="/reports" className="hover:text-blue-600 transition-colors">{t('footer.product.link_2')}</Link></li>
+                        <li><Link to="/dashboard" className="hover:text-blue-600 transition-colors">{t('footer.product.link_3')}</Link></li>
+                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">{t('footer.product.link_4')}</span></li>
                     </ul>
                 </div>
 
                 <div className="pt-2 md:pt-0">
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">Company</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">{t('footer.company.heading')}</h4>
                     <ul className="space-y-3 text-sm text-slate-600 dark:text-slate-400">
-                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">About Us</span></li>
-                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">Our Doctors</span></li>
-                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">Careers</span></li>
-                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">Contact</span></li>
+                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">{t('footer.company.link_1')}</span></li>
+                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">{t('footer.company.link_2')}</span></li>
+                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">{t('footer.company.link_3')}</span></li>
+                        <li><span className="hover:text-blue-600 cursor-pointer transition-colors">{t('footer.company.link_4')}</span></li>
                     </ul>
                 </div>
 
                 <div className="md:col-span-1 pt-2 md:pt-0">
-                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">Newsletter</h4>
+                    <h4 className="font-bold text-slate-900 dark:text-white mb-4 text-sm">{t('footer.newsletter.heading')}</h4>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-                        Stay updated with the latest in AI health tech.
+                        {t('footer.newsletter.text')}
                     </p>
                     <div className="flex items-center w-full">
                         <input
                             type="email"
-                            placeholder="Your email"
+                            placeholder={t('footer.newsletter.input_placeholder')}
                             className="w-full bg-slate-100 dark:bg-slate-800 border bg-transparent border-slate-200 dark:border-slate-700 rounded-l-lg py-2.5 px-4 text-sm focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
                         />
                         <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-r-lg px-4 py-2.5 transition-colors border max-h-[42px] border-blue-600 dark:border-blue-700">

@@ -7,8 +7,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectIsAuthenticated, loginSuccess } from '../../store/slices/authSlice';
 import { logout } from '../../store/slices/authSlice';
 import { profileAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
+    const { t } = useTranslation('common');
     const { theme, toggleTheme } = useTheme();
     const location = useLocation();
     const navigate = useNavigate();
@@ -63,12 +65,12 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
     };
 
     const navLinks = [
-        { name: 'Home', path: '/' },
-        { name: 'Dashboard', path: '/dashboard' },
-        { name: 'ScanSense AI', path: '/scanner' },
-        { name: 'Reports', path: '/reports' },
-        { name: 'Chatbot', path: '/chat' },
-        { name: 'Help', path: '/help', isEmergency: true },
+        { name: t('nav.home'), path: '/' },
+        { name: t('nav.dashboard'), path: '/dashboard' },
+        { name: t('nav.scanner'), path: '/scanner' },
+        { name: t('nav.reports'), path: '/reports' },
+        { name: t('nav.chatbot'), path: '/chat' },
+        { name: t('nav.help'), path: '/help', isEmergency: true },
     ];
 
     return (
@@ -94,12 +96,11 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                 key={link.name}
                                 to={link.path}
                                 className={({ isActive }) =>
-                                    `text-sm font-bold transition-colors ${
-                                        link.isEmergency 
-                                            ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-full' 
-                                            : isActive && location.pathname !== '/'
-                                                ? 'text-blue-600 dark:text-blue-400'
-                                                : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                                    `text-sm font-bold transition-colors ${link.isEmergency
+                                        ? 'text-red-500 hover:text-red-600 bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-full'
+                                        : isActive && location.pathname !== '/'
+                                            ? 'text-blue-600 dark:text-blue-400'
+                                            : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
                                     }`
                                 }
                             >
@@ -193,7 +194,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                 onClick={() => { dispatch(logout()); }}
                                 className="bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 border border-red-100 dark:border-red-900/40 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors ml-2"
                             >
-                                Logout
+                                {t('nav.logout')}
                             </button>
                         )}
                     </div>
@@ -235,12 +236,11 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                 to={link.path}
                                 onClick={() => setMobileMenuOpen(false)}
                                 className={({ isActive }) =>
-                                    `block px-3 py-3 rounded-lg text-base font-bold ${
-                                        link.isEmergency
-                                            ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                                            : isActive
-                                                ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
-                                                : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800'
+                                    `block px-3 py-3 rounded-lg text-base font-bold ${link.isEmergency
+                                        ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                                        : isActive
+                                            ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                                            : 'text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800'
                                     }`
                                 }
                             >
@@ -269,7 +269,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen }) => {
                                         onClick={() => { dispatch(logout()); setMobileMenuOpen(false); }}
                                         className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 border border-red-100 dark:border-red-900/40 text-center px-4 py-3 rounded-xl font-semibold transition-colors"
                                     >
-                                        Logout
+                                        {t('nav.logout')}
                                     </button>
                                 </>
                             )}

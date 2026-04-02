@@ -1,15 +1,18 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { IconLayoutDashboard, IconScan, IconFileText, IconMessage, IconClock, IconSettings, IconUserCircle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
+    const { t } = useTranslation('common');
+
     const navItems = [
-        { name: 'Dashboard', path: '/dashboard', icon: <IconLayoutDashboard size={20} /> },
-        { name: 'ScanSense AI', path: '/scanner', icon: <IconScan size={20} /> },
-        { name: 'Report Upload', path: '/reports', icon: <IconFileText size={20} /> },
+        { name: t('nav.dashboard'), path: '/dashboard', icon: <IconLayoutDashboard size={20} /> },
+        { name: t('nav.scanner'), path: '/scanner', icon: <IconScan size={20} /> },
+        { name: t('nav.reports'), path: '/reports', icon: <IconFileText size={20} /> },
         { name: 'Health Chatbot', path: '/chat', icon: <IconMessage size={20} /> },
-        { name: 'Health History', path: '/history', icon: <IconClock size={20} /> },
-        { name: 'Profile Setup', path: '/profile-setup', icon: <IconUserCircle size={20} /> },
+        { name: t('nav.history'), path: '/history', icon: <IconClock size={20} /> },
+        { name: t('nav.profile'), path: '/profile-setup', icon: <IconUserCircle size={20} /> },
         { name: 'Settings', path: '/settings', icon: <IconSettings size={20} /> },
     ];
 
