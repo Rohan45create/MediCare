@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "सेटिंग्ज",
+      "subtitle": "तुमचे MediCare प्राधान्ये आणि खाते तपशील व्यवस्थापित करा."
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "देखावा आणि भाषा",
+        "dark_mode": {
+          "label": "डार्क मोड",
+          "description": "संपूर्ण अ‍ॅपमध्ये डार्क थीम टॉगल करा"
+        },
+        "language_selection": {
+          "label": "भाषा",
+          "description": "तुमची पसंतीची भाषा निवडा",
+          "current_selection": "इंग्रजी"
+        }
+      },
+      "notifications": {
+        "heading": "सूचना",
+        "push_notifications": {
+          "label": "पुश सूचना",
+          "description": "औषधे आणि अहवालांसाठी सूचना प्राप्त करा"
+        }
+      },
+      "account_security": {
+        "heading": "खाते सुरक्षा",
+        "action": {
+          "label": "साईन आऊट करा"
+        }
+      }
+    }
+  }
+}

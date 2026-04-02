@@ -1,0 +1,56 @@
+{
+  "chatAi": "Ask AI About This Scan",
+  "subtitle": "Medicine Safety Analysis",
+  "generic": "Generic",
+  "alert": "Safety Alert",
+  "nsqAlert": "Not of Standard Quality",
+  "scannedOn": "Scanned on",
+  "needHelp": "Need Help?",
+  "helpDesc": "Ask our AI assistant about this medicine",
+  "askAiBtn": "Ask AI Assistant",
+  "dosage": {
+    "title": "Dosage & Safety Limits",
+    "strength": "Current Strength",
+    "maxDose": "Max Safe Dose",
+    "status": "Dosage Status",
+    "safe": "SAFE",
+    "caution": "CAUTION",
+    "warning": "WARNING"
+  },
+  "warnings": {
+    "title": "Medical Warnings",
+    "doNotTake": "DO NOT TAKE IF YOU HAVE:",
+    "interactsWith": "INTERACTS WITH:"
+  },
+  "sideEffects": {
+    "title": "Side Effects",
+    "mild": "Mild",
+    "serious": "Serious"
+  },
+  "usage": {
+    "title": "Usage Guide",
+    "frequency": "FREQUENCY",
+    "food": "FOOD",
+    "duration": "DURATION"
+  },
+  "alternatives": {
+    "title": "Alternative Medicines",
+    "disclaimer": "Always consult your healthcare provider before switching medications."
+  },
+  "safety": {
+    "title": "Safety Status",
+    "fdaData": "FDA Data",
+    "available": "Available",
+    "notAvailable": "Not Available"
+  },
+  "schedule": {
+    "title": "Medication Schedule",
+    "morning": "Morning",
+    "evening": "Evening",
+    "setReminders": "Set Reminders"
+  },
+  "barcodeHistory": "Barcode: Retrieved from History",
+  "category": {
+    "analgesic": "ANALGESIC/ANTIPYRETIC"
+  }
+}

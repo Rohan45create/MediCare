@@ -1,0 +1,22 @@
+{
+  "progress": {
+    "title": "Check Progress",
+    "subtitle": "View your health metrics and daily goals",
+    "button": "View"
+  },
+  "preferences": {
+    "title": "Preferences & Settings",
+    "appSettings": "App settings",
+    "profileSetup": "Profile setup",
+    "needsUpdate": "NEEDS UPDATE",
+    "medicalHistory": "Medical History",
+    "appPermissions": "App permissions"
+  },
+  "personal": {
+    "title": "Personal Details",
+    "mobilePhone": "Mobile Phone",
+    "dateOfBirth": "Date of Birth",
+    "notSet": "Not set",
+    "patientMember": "Patient Member"
+  }
+}

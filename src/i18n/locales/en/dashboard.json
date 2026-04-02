@@ -1,0 +1,13 @@
+{
+  "title": "Your Health Dashboard",
+  "subtitle": "Based on your latest report",
+  "healthScore": "Health Score",
+  "riskLevel": "Overall Risk",
+  "reportDate": "Report dated",
+  "metrics": "Your Health Metrics",
+  "trends": "Trends Over Time",
+  "noReport": "No report analysed yet",
+  "uploadPrompt": "Upload a report to see your health dashboard",
+  "abnormalCount": "{{count}} abnormal value",
+  "abnormalCount_plural": "{{count}} abnormal values"
+}

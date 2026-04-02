@@ -1,0 +1,56 @@
+{
+  "chatAi": "આ સ્કેન વિશે AI ને પૂછો",
+  "subtitle": "દવા સલામતી વિશ્લેષણ",
+  "generic": "જેનેરિક",
+  "alert": "સલામતી ચેતવણી",
+  "nsqAlert": "માનક ગુણવત્તાનું નથી",
+  "scannedOn": "સ્કેન કરેલ",
+  "needHelp": "મદદ જોઈએ છે?",
+  "helpDesc": "આ દવા વિશે અમારા AI સહાયકને પૂછો",
+  "askAiBtn": "AI સહાયકને પૂછો",
+  "dosage": {
+    "title": "ડોઝ અને સલામતી મર્યાદા",
+    "strength": "વર્તમાન શક્તિ",
+    "maxDose": "મહત્તમ સલામત ડોઝ",
+    "status": "ડોઝ સ્થિતિ",
+    "safe": "સલામત",
+    "caution": "સાવધાની",
+    "warning": "ચેતવણી"
+  },
+  "warnings": {
+    "title": "તબીબી ચેતવણીઓ",
+    "doNotTake": "આ હોય તો ન લો:",
+    "interactsWith": "આની સાથે પ્રતિક્રિયા કરે છે:"
+  },
+  "sideEffects": {
+    "title": "આડઅસરો",
+    "mild": "હળવી",
+    "serious": "ગંભીર"
+  },
+  "usage": {
+    "title": "વપરાશ માર્ગદર્શિકા",
+    "frequency": "આવર્તન",
+    "food": "ખોરાક",
+    "duration": "સમયગાળો"
+  },
+  "alternatives": {
+    "title": "વૈકલ્પિક દવાઓ",
+    "disclaimer": "દવાઓ બદલતા પહેલાં હંમેશા તમારા ડૉક્ટરની સલાહ લો."
+  },
+  "safety": {
+    "title": "સલામતી સ્થિતિ",
+    "fdaData": "FDA ડેટા",
+    "available": "ઉપલબ્ધ",
+    "notAvailable": "ઉપલબ્ધ નથી"
+  },
+  "schedule": {
+    "title": "દવાનું સમયપત્રક",
+    "morning": "સવાર",
+    "evening": "સાંજ",
+    "setReminders": "રિમાઇન્ડર્સ સેટ કરો"
+  },
+  "barcodeHistory": "બારકોડ: ઇતિહાસમાંથી મેળવેલ",
+  "category": {
+    "analgesic": "પીડાનાશક"
+  }
+}

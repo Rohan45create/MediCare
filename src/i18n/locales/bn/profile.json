@@ -1,0 +1,22 @@
+{
+  "progress": {
+    "title": "অগ্রগতি পরীক্ষা করুন",
+    "subtitle": "আপনার স্বাস্থ্য মেট্রিক এবং দৈনিক লক্ষ্যগুলি দেখুন",
+    "button": "দেখুন"
+  },
+  "preferences": {
+    "title": "পছন্দ এবং সেটিংস",
+    "appSettings": "অ্যাপ সেটিংস",
+    "profileSetup": "প্রোফাইল সেটআপ",
+    "needsUpdate": "আপডেট প্রয়োজন",
+    "medicalHistory": "চিকিৎসা ইতিহাস",
+    "appPermissions": "অ্যাপ অনুমতি"
+  },
+  "personal": {
+    "title": "ব্যক্তিগত বিবরণ",
+    "mobilePhone": "মোবাইল ফোন",
+    "dateOfBirth": "জন্ম তারিখ",
+    "notSet": "সেট করা হয়নি",
+    "patientMember": "রোগী সদস্য"
+  }
+}

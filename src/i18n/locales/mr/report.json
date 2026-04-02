@@ -1,0 +1,54 @@
+{
+  "upload": {
+    "title": "लॅब अहवाल अपलोड करा",
+    "subtitle": "पीडीएफ किंवा इमेज समर्थित",
+    "dragDrop": "तुमचा अहवाल येथे खेचा आणि सोडा",
+    "or": "किंवा",
+    "browse": "फायली ब्राउझ करा",
+    "processing": "तुमच्या अहवालाचे विश्लेषण करत आहे...",
+    "success": "अहवालाचे यशस्वीरित्या विश्लेषण केले",
+    "failed": "अहवाल वाचता आला नाही",
+    "confirmTitle": "काढलेल्या मूल्यांचे पुनरावलोकन करा",
+    "confirmSubtitle": "कृपया विश्लेषणापूर्वी ही मूल्ये सत्यापित करा"
+  },
+  "result": {
+    "title": "अहवाल विश्लेषण",
+    "aiSummary": "एआय सारांश",
+    "testResults": "चाचणी परिणाम",
+    "keyInsights": "मुख्य माहिती",
+    "recommendations": "शिफारसी",
+    "normalRange": "सामान्य श्रेणी",
+    "yourValue": "तुमचे मूल्य",
+    "aiUnavailable": "एआय सारांश उपलब्ध नाही"
+  },
+  "sections": {
+    "keyInsights": "प्रमुख अंतर्दृष्टी",
+    "labBreakdown": "लॅब निकाल विश्लेषण",
+    "aiAssessment": "AI अतिरिक्त मूल्यांकन",
+    "extractionConfidence": "निष्कर्षण विश्वासार्हता",
+    "dailyLifeImpact": "दैनंदिन जीवनावरील प्रभाव",
+    "actionableSteps": "कृती करण्यायोग्य पावले",
+    "possibleCauses": "संभाव्य कारणे",
+    "followUpSchedule": "फॉलो-अप वेळापत्रक"
+  },
+  "actions": {
+    "askAi": "या अहवालाबद्दल AI ला विचारा",
+    "uploadAnother": "दुसरा अहवाल अपलोड करा",
+    "followUpConsult": "फॉलो-अप वेळापत्रकासाठी आपल्या डॉक्टरांचा सल्ला घ्या."
+  },
+  "table": {
+    "testName": "चाचणीचे नाव",
+    "value": "मूल्य",
+    "unit": "एकक",
+    "referenceRange": "संदर्भ श्रेणी",
+    "status": "स्थिती",
+    "meaning": "अर्थ",
+    "review": "पुनरावलोकन",
+    "requiresMedical": "वैद्यकीय पुनरावलोकन आवश्यक",
+    "standardRange": "मानक श्रेणी बदलते",
+    "normalRange": "सामान्य श्रेणी"
+  },
+  "errors": {
+    "queryLimit": "प्रश्न लांबीची मर्यादा ओलांडली. जास्तीत जास्त: 500 वर्ण"
+  }
+}

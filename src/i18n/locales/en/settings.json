@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "Settings",
+      "subtitle": "Manage your MediCare preferences and account details."
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "Appearance & Language",
+        "dark_mode": {
+          "label": "Dark Mode",
+          "description": "Toggle dark theme across the app"
+        },
+        "language_selection": {
+          "label": "Language",
+          "description": "Select your preferred language",
+          "current_selection": "English"
+        }
+      },
+      "notifications": {
+        "heading": "Notifications",
+        "push_notifications": {
+          "label": "Push Notifications",
+          "description": "Receive alerts for medicines and reports"
+        }
+      },
+      "account_security": {
+        "heading": "Account Security",
+        "action": {
+          "label": "Sign Out"
+        }
+      }
+    }
+  }
+}

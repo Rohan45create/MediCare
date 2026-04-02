@@ -1,0 +1,27 @@
+{
+  "title": "ScanSense AI",
+  "subtitle": "Scan a barcode to check medicine safety",
+  "scanButton": "Start Scanning",
+  "manualEntry": "Enter barcode manually",
+  "identify": "Identify Medicine",
+  "instruction": "Point your camera at the medicine barcode or upload an image from your device",
+  "cameraBtn": "Scan with Camera",
+  "uploadBtn": "Upload Image",
+  "tip": "Tip",
+  "tipText": "Ensure good lighting and a clear image of the barcode for accurate results",
+  "result": {
+    "title": "Medicine Information",
+    "safetyStatus": "Safety Status",
+    "warnings": "Warnings",
+    "sideEffects": "Side Effects",
+    "alternatives": "Alternatives",
+    "dosage": "Dosage Guide",
+    "crossAnalysis": "Lab Report Cross-Analysis",
+    "fdaData": "FDA Safety Data"
+  },
+  "status": {
+    "safe": "Safe to use",
+    "caution": "Use with caution",
+    "warning": "Consult doctor"
+  }
+}

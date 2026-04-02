@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "सेटिंग्स",
+      "subtitle": "अपनी MediCare प्राथमिकताओं और खाता विवरणों को प्रबंधित करें।"
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "प्रकटन और भाषा",
+        "dark_mode": {
+          "label": "डार्क मोड",
+          "description": "ऐप भर में डार्क थीम चालू/बंद करें"
+        },
+        "language_selection": {
+          "label": "भाषा",
+          "description": "अपनी पसंदीदा भाषा चुनें",
+          "current_selection": "अंग्रेज़ी"
+        }
+      },
+      "notifications": {
+        "heading": "सूचनाएं",
+        "push_notifications": {
+          "label": "पुश सूचनाएं",
+          "description": "दवाओं और रिपोर्ट के लिए अलर्ट प्राप्त करें"
+        }
+      },
+      "account_security": {
+        "heading": "खाता सुरक्षा",
+        "action": {
+          "label": "साइन आउट करें"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "upload": {
+    "title": "Upload Lab Report",
+    "subtitle": "PDF or image supported",
+    "dragDrop": "Drag & drop your report here",
+    "or": "or",
+    "browse": "Browse files",
+    "processing": "Analysing your report...",
+    "success": "Report analysed successfully",
+    "failed": "Could not read report",
+    "confirmTitle": "Review Extracted Values",
+    "confirmSubtitle": "Please verify these values before analysis"
+  },
+  "result": {
+    "title": "Report Analysis",
+    "aiSummary": "AI Summary",
+    "testResults": "Test Results",
+    "keyInsights": "Key Insights",
+    "recommendations": "Recommendations",
+    "normalRange": "Normal range",
+    "yourValue": "Your value",
+    "aiUnavailable": "AI summary unavailable"
+  },
+  "sections": {
+    "keyInsights": "Key Insights",
+    "labBreakdown": "Lab Results Breakdown",
+    "aiAssessment": "AI Extra Assessment",
+    "extractionConfidence": "Extraction Confidence",
+    "dailyLifeImpact": "Daily Life Impact",
+    "actionableSteps": "Actionable Steps",
+    "possibleCauses": "Possible Causes",
+    "followUpSchedule": "Follow-up Schedule"
+  },
+  "actions": {
+    "askAi": "Ask AI About This Report",
+    "uploadAnother": "Upload Another Report",
+    "followUpConsult": "Consult your doctor for a follow-up schedule."
+  },
+  "table": {
+    "testName": "TEST NAME",
+    "value": "VALUE",
+    "unit": "UNIT",
+    "referenceRange": "REFERENCE RANGE",
+    "status": "STATUS",
+    "meaning": "MEANING",
+    "review": "REVIEW",
+    "requiresMedical": "Requires medical review",
+    "standardRange": "Standard range varies",
+    "normalRange": "Normal range"
+  },
+  "errors": {
+    "queryLimit": "Query length limit exceeded. Max allowed query: 500 chars"
+  }
+}

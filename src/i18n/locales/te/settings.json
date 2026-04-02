@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "సెట్టింగ్‌లు",
+      "subtitle": "మీ MediCare ప్రాధాన్యతలు మరియు ఖాతా వివరాలను నిర్వహించండి."
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "ప్రదర్శన & భాష",
+        "dark_mode": {
+          "label": "డార్క్ మోడ్",
+          "description": "యాప్ అంతటా డార్క్ థీమ్‌ను టోగుల్ చేయండి"
+        },
+        "language_selection": {
+          "label": "భాష",
+          "description": "మీకు ఇష్టమైన భాషను ఎంచుకోండి",
+          "current_selection": "ఇంగ్లీష్"
+        }
+      },
+      "notifications": {
+        "heading": "నోటిఫికేషన్‌లు",
+        "push_notifications": {
+          "label": "పుష్ నోటిఫికేషన్‌లు",
+          "description": "మందులు మరియు నివేదికల కోసం హెచ్చరికలను స్వీకరించండి"
+        }
+      },
+      "account_security": {
+        "heading": "ఖాతా భద్రత",
+        "action": {
+          "label": "సైన్ అవుట్ చేయండి"
+        }
+      }
+    }
+  }
+}

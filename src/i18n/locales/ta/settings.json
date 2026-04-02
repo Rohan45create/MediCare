@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "அமைப்புகள்",
+      "subtitle": "உங்கள் MediCare விருப்பத்தேர்வுகள் மற்றும் கணக்கு விவரங்களை நிர்வகிக்கவும்."
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "தோற்றம் மற்றும் மொழி",
+        "dark_mode": {
+          "label": "இருண்ட பயன்முறை",
+          "description": "பயன்பாடு முழுவதும் இருண்ட தீமை மாற்றவும்"
+        },
+        "language_selection": {
+          "label": "மொழி",
+          "description": "உங்களுக்கு விருப்பமான மொழியைத் தேர்ந்தெடுக்கவும்",
+          "current_selection": "ஆங்கிலம்"
+        }
+      },
+      "notifications": {
+        "heading": "அறிவிப்புகள்",
+        "push_notifications": {
+          "label": "புஷ் அறிவிப்புகள்",
+          "description": "மருந்துகள் மற்றும் அறிக்கைகளுக்கான விழிப்பூட்டல்களைப் பெறவும்"
+        }
+      },
+      "account_security": {
+        "heading": "கணக்கு பாதுகாப்பு",
+        "action": {
+          "label": "வெளியேறு"
+        }
+      }
+    }
+  }
+}

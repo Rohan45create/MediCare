@@ -1,0 +1,54 @@
+{
+  "upload": {
+    "title": "ল্যাব রিপোর্ট আপলোড করুন",
+    "subtitle": "PDF বা ছবি সমর্থিত",
+    "dragDrop": "আপনার রিপোর্ট এখানে টেনে আনুন এবং ছেড়ে দিন",
+    "or": "বা",
+    "browse": "ফাইল ব্রাউজ করুন",
+    "processing": "আপনার রিপোর্ট বিশ্লেষণ করা হচ্ছে...",
+    "success": "রিপোর্ট সফলভাবে বিশ্লেষণ করা হয়েছে",
+    "failed": "রিপোর্ট পড়া যায়নি",
+    "confirmTitle": "নিষ্কাশিত মান পর্যালোচনা করুন",
+    "confirmSubtitle": "বিশ্লেষণের আগে এই মানগুলি যাচাই করুন"
+  },
+  "result": {
+    "title": "রিপোর্ট বিশ্লেষণ",
+    "aiSummary": "এআই সারাংশ",
+    "testResults": "পরীক্ষার ফলাফল",
+    "keyInsights": "মূল তথ্য",
+    "recommendations": "সুপারিশ",
+    "normalRange": "স্বাভাবিক পরিসীমা",
+    "yourValue": "আপনার মান",
+    "aiUnavailable": "এআই সারাংশ উপলব্ধ নেই"
+  },
+  "sections": {
+    "keyInsights": "মূল অন্তর্দৃষ্টি",
+    "labBreakdown": "ল্যাব ফলাফল বিশ্লেষণ",
+    "aiAssessment": "AI অতিরিক্ত মূল্যায়ন",
+    "extractionConfidence": "নিষ্কাশন নির্ভরযোগ্যতা",
+    "dailyLifeImpact": "দৈনন্দিন জীবনে প্রভাব",
+    "actionableSteps": "কার্যকরী পদক্ষেপ",
+    "possibleCauses": "সম্ভাব্য কারণ",
+    "followUpSchedule": "ফলো-আপ সময়সূচি"
+  },
+  "actions": {
+    "askAi": "এই রিপোর্ট সম্পর্কে AI কে জিজ্ঞাসা করুন",
+    "uploadAnother": "আরেকটি রিপোর্ট আপলোড করুন",
+    "followUpConsult": "ফলো-আপের জন্য আপনার ডাক্তারের পরামর্শ নিন।"
+  },
+  "table": {
+    "testName": "পরীক্ষার নাম",
+    "value": "মান",
+    "unit": "একক",
+    "referenceRange": "রেফারেন্স পরিসীমা",
+    "status": "অবস্থা",
+    "meaning": "অর্থ",
+    "review": "পর্যালোচনা",
+    "requiresMedical": "চিকিৎসা পর্যালোচনা প্রয়োজন",
+    "standardRange": "মান পরিসীমা পরিবর্তনশীল",
+    "normalRange": "স্বাভাবিক পরিসর"
+  },
+  "errors": {
+    "queryLimit": "প্রশ্নের দৈর্ঘ্য সীমা অতিক্রম করেছে। সর্বাধিক: ৫০০ অক্ষর"
+  }
+}

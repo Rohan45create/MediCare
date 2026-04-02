@@ -1,0 +1,51 @@
+{
+    "hero": {
+        "herotitle1": "Your AI",
+        "herotitle2": "Health",
+        "herotitle3": "Guardian",
+        "herodesc": "Professional healthcare assistant for medicine scanning, report analysis, and health tracking. Designed for clarity and ease of use for all ages.",
+        "herobtn": "Try ScanSense AI"
+    },
+    "features": {
+        "title": "Intelligent Features",
+        "heading": "Advanced Care for Everyone, Simplified.",
+        "subheading": "Empowering you with AI-driven tools to manage your health safely and effectively, without the medical jargon.",
+        "scan": {
+            "title": "Medicine Scanner",
+            "desc": "Instantly identify pills, check dosages, and see potential side effects using ScanSense AI."
+        },
+        "report": {
+            "title": "Report Analysis",
+            "desc": "Upload complex medical reports and get simplified, easy-to-read summaries in seconds."
+        },
+        "chatbot": {
+            "title": "Health Dashboard",
+            "desc": "Track your vitals, medication history, and appointments in one clean, large-font interface."
+        },
+        "history": {
+            "title": "Fake Drug Detection",
+            "desc": "Verify the authenticity of your medication with our global database and security checks."
+        }
+    },
+    "testimonial": {
+        "title": "What our users are saying",
+        "subheading": "Join thousands of people who trust MediCare for their daily health management.",
+        "feedback1": {
+            "name": "Robert Chen",
+            "prof": "Retired Teacher, 68",
+            "comment": "As an elderly person, I used to struggle with all the different pills. The scanner is a life-saver, literally! Everything is so clear and easy to read."
+        },
+        "feedback2": {
+            "name": "Sarah Miller",
+            "prof": "Freelance Designer, 34",
+            "comment": "The report analysis tool helped me understand my lab results before I even talked to my doctor. It made me feel much more in control of my health."
+        }
+    },
+    "package": {
+        "title1": "Ready to take control",
+        "title2": "of your health?",
+        "subheading": "Start your 14-day free trial today. No credit card required. Experience the future of personalized AI healthcare.",
+        "btn1": "Get Started",
+        "btn2": "Book a Demo"
+    }
+}

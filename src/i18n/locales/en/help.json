@@ -1,0 +1,41 @@
+{
+  "title": "Emergency Help",
+  "subtitle": "Step-by-step guidance for medical emergencies",
+  "search": "Search emergency... e.g. CPR, choking, chest pain",
+  "voiceSearch": "Voice search",
+  "sos": "SOS",
+  "contacts": {
+    "title": "Emergency Contacts",
+    "ambulance": "Ambulance",
+    "police": "Police",
+    "fire": "Fire",
+    "women": "Women Helpline",
+    "poison": "Poison Control",
+    "personal": "Personal Contacts",
+    "addContact": "Add Contact",
+    "name": "Name",
+    "phone": "Phone"
+  },
+  "guide": {
+    "steps": "Steps",
+    "do": "Do",
+    "dont": "Don't",
+    "emergency": "Emergency Action",
+    "watch": "Watch: How to help"
+  },
+  "map": {
+    "title": "Nearby Hospitals",
+    "enable": "Enable location to find nearby hospitals",
+    "loading": "Finding hospitals near you..."
+  },
+  "profile": {
+    "title": "Your Emergency Profile",
+    "bloodGroup": "Blood Group",
+    "allergies": "Known Allergies",
+    "conditions": "Medical Conditions",
+    "contactName": "Emergency Contact Name",
+    "contactPhone": "Emergency Contact Phone",
+    "edit": "Edit",
+    "save": "Save Profile"
+  }
+}

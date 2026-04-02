@@ -1,0 +1,22 @@
+{
+  "progress": {
+    "title": "పురోగతిని తనిఖీ చేయండి",
+    "subtitle": "మీ ఆరోగ్య కొలమానాలు మరియు రోజువారీ లక్ష్యాలను చూడండి",
+    "button": "చూడండి"
+  },
+  "preferences": {
+    "title": "ప్రాధాన్యతలు & సెట్టింగ్‌లు",
+    "appSettings": "యాప్ సెట్టింగ్‌లు",
+    "profileSetup": "ప్రొఫైల్ సెటప్",
+    "needsUpdate": "నవీకరణ అవసరం",
+    "medicalHistory": "వైద్య చరిత్ర",
+    "appPermissions": "యాప్ అనుమతులు"
+  },
+  "personal": {
+    "title": "వ్యక్తిగత వివరాలు",
+    "mobilePhone": "మొబైల్ ఫోన్",
+    "dateOfBirth": "పుట్టిన తేదీ",
+    "notSet": "సెట్ చేయబడలేదు",
+    "patientMember": "రోగి సభ్యుడు"
+  }
+}

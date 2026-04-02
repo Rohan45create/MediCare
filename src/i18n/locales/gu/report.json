@@ -1,0 +1,54 @@
+{
+  "upload": {
+    "title": "લેબ રિપોર્ટ અપલોડ કરો",
+    "subtitle": "પીડીએફ અથવા ઇમેજ સપોર્ટેડ",
+    "dragDrop": "તમારો રિપોર્ટ અહીં ખેંચો અને છોડો",
+    "or": "અથવા",
+    "browse": "ફાઇલો બ્રાઉઝ કરો",
+    "processing": "તમારા રિપોર્ટનું વિશ્લેષણ કરી રહ્યું છે...",
+    "success": "રિપોર્ટનું સફળતાપૂર્વક વિશ્લેષણ કરવામાં આવ્યું",
+    "failed": "રિપોર્ટ વાંચી શકાયો નથી",
+    "confirmTitle": "કાઢેલ મૂલ્યોની સમીક્ષા કરો",
+    "confirmSubtitle": "કૃપા કરીને વિશ્લેષણ કરતા પહેલા આ મૂલ્યોની ચકાસણી કરો"
+  },
+  "result": {
+    "title": "રિપોર્ટ વિશ્લેષણ",
+    "aiSummary": "એઆઈ સારાંશ",
+    "testResults": "પરીક્ષણ પરિણામો",
+    "keyInsights": "મુખ્ય માહિતી",
+    "recommendations": "ભલામણો",
+    "normalRange": "સામાન્ય શ્રેણી",
+    "yourValue": "તમારું મૂલ્ય",
+    "aiUnavailable": "એઆઈ સારાંશ ઉપલબ્ધ નથી"
+  },
+  "sections": {
+    "keyInsights": "મુખ્ય આંતરદૃષ્ટિ",
+    "labBreakdown": "લેબ પરિણામ વિશ્લેષણ",
+    "aiAssessment": "AI વધારાનું મૂલ્યાંકન",
+    "extractionConfidence": "નિષ્કર્ષણ વિશ્વસનીયતા",
+    "dailyLifeImpact": "દૈનિક જીવન પર અસર",
+    "actionableSteps": "કરવા લાયક પગલાં",
+    "possibleCauses": "શક્ય કારણો",
+    "followUpSchedule": "ફોલો-અપ શેડ્યૂલ"
+  },
+  "actions": {
+    "askAi": "આ રિપોર્ટ વિશે AI ને પૂછો",
+    "uploadAnother": "બીજો રિપોર્ટ અપલોડ કરો",
+    "followUpConsult": "ફોલો-અપ શેડ્યૂલ માટે તમારા ડૉક્ટરની સલાહ લો."
+  },
+  "table": {
+    "testName": "ટેસ્ટનું નામ",
+    "value": "મૂલ્ય",
+    "unit": "એકમ",
+    "referenceRange": "સંદર્ભ શ્રેણી",
+    "status": "સ્થિતિ",
+    "meaning": "અર્થ",
+    "review": "સમીક્ષા",
+    "requiresMedical": "તબીબી સમીક્ષા જરૂરી",
+    "standardRange": "ધોરણ શ્રેણી બદલાય છે",
+    "normalRange": "સામાન્ય શ્રેણી"
+  },
+  "errors": {
+    "queryLimit": "પ્રશ્નની લંબાઈ મર્યાદા ઓળંગી ગઈ. મહત્તમ: 500 અક્ષરો"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "reports": "Reports",
+    "scanner": "Medicine Scanner",
+    "help": "Help",
+    "history": "Health History",
+    "profile": "Profile",
+    "logout": "Logout",
+    "home": "Home",
+    "chatbot": "Chatbot"
+  },
+  "buttons": {
+    "upload": "Upload Report",
+    "analyze": "Analyze",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "call": "Call Now",
+    "directions": "Get Directions",
+    "download": "Download",
+    "scan": "Scan Barcode"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "noData": "No data available",
+    "success": "Done!"
+  },
+  "language": {
+    "select": "Select Language",
+    "changed": "Language changed"
+  },
+  "risk": {
+    "low": "Low Risk",
+    "medium": "Medium Risk",
+    "high": "High Risk"
+  },
+  "health": {
+    "normal": "Normal",
+    "abnormal": "Abnormal",
+    "high": "High",
+    "low": "Low"
+  },
+  "footer": {
+    "brand": {
+      "text": "MediCare",
+      "description": "Your trusted AI health companion. We prioritize accuracy, security, and accessibility in healthcare for all generations."
+    },
+    "product": {
+      "heading": "Product",
+      "link_1": "Medicine Scanner",
+      "link_2": "Report Analysis",
+      "link_3": "AI Health Chatbot",
+      "link_4": "Drug Verification"
+    },
+    "company": {
+      "heading": "Company",
+      "link_1": "About Us",
+      "link_2": "Our Doctors",
+      "link_3": "Careers",
+      "link_4": "Contact"
+    },
+    "newsletter": {
+      "heading": "Newsletter",
+      "text": "Stay updated with the latest in AI health tech.",
+      "input_placeholder": "Your email"
+    }
+  }
+}

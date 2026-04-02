@@ -1,0 +1,22 @@
+{
+  "progress": {
+    "title": "प्रगति जाँचें",
+    "subtitle": "अपने स्वास्थ्य मेट्रिक्स और दैनिक लक्ष्य देखें",
+    "button": "देखें"
+  },
+  "preferences": {
+    "title": "प्राथमिकताएं और सेटिंग्स",
+    "appSettings": "ऐप सेटिंग्स",
+    "profileSetup": "प्रोफ़ाइल सेटअप",
+    "needsUpdate": "अपडेट आवश्यक",
+    "medicalHistory": "चिकित्सा इतिहास",
+    "appPermissions": "ऐप अनुमतियां"
+  },
+  "personal": {
+    "title": "व्यक्तिगत विवरण",
+    "mobilePhone": "मोबाइल फोन",
+    "dateOfBirth": "जन्म तिथि",
+    "notSet": "सेट नहीं है",
+    "patientMember": "रोगी सदस्य"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "સેટિંગ્સ",
+      "subtitle": "તમારી MediCare પસંદગીઓ અને એકાઉન્ટની વિગતો મેનેજ કરો."
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "દેખાવ અને ભાષા",
+        "dark_mode": {
+          "label": "ડાર્ક મોડ",
+          "description": "સમગ્ર એપ્લિકેશનમાં ડાર્ક થીમ ટૉગલ કરો"
+        },
+        "language_selection": {
+          "label": "ભાષા",
+          "description": "તમારી પસંદગીની ભાષા પસંદ કરો",
+          "current_selection": "અંગ્રેજી"
+        }
+      },
+      "notifications": {
+        "heading": "સૂચનાઓ",
+        "push_notifications": {
+          "label": "પુશ સૂચનાઓ",
+          "description": "દવાઓ અને રિપોર્ટ્સ માટે ચેતવણીઓ પ્રાપ્ત કરો"
+        }
+      },
+      "account_security": {
+        "heading": "એકાઉન્ટ સુરક્ષા",
+        "action": {
+          "label": "સાઇન આઉટ કરો"
+        }
+      }
+    }
+  }
+}

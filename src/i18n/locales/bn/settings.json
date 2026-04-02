@@ -1,0 +1,35 @@
+{
+  "settings_page": {
+    "header": {
+      "title": "সেটিংস",
+      "subtitle": "আপনার MediCare পছন্দ এবং অ্যাকাউন্টের বিবরণ পরিচালনা করুন।"
+    },
+    "sections": {
+      "appearance_and_language": {
+        "heading": "উপস্থিতি এবং ভাষা",
+        "dark_mode": {
+          "label": "ডার্ক মোড",
+          "description": "অ্যাপ জুড়ে ডার্ক থিম টগল করুন"
+        },
+        "language_selection": {
+          "label": "ভাষা",
+          "description": "আপনার পছন্দের ভাষা নির্বাচন করুন",
+          "current_selection": "ইংরেজি"
+        }
+      },
+      "notifications": {
+        "heading": "বিজ্ঞপ্তি",
+        "push_notifications": {
+          "label": "পুশ বিজ্ঞপ্তি",
+          "description": "ওষুধ এবং রিপোর্টের জন্য সতর্কতা পান"
+        }
+      },
+      "account_security": {
+        "heading": "অ্যাকাউন্ট নিরাপত্তা",
+        "action": {
+          "label": "সাইন আউট করুন"
+        }
+      }
+    }
+  }
+}

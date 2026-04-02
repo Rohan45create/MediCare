@@ -1,0 +1,54 @@
+{
+  "upload": {
+    "title": "ల్యాబ్ నివేదికను అప్‌లోడ్ చేయండి",
+    "subtitle": "PDF లేదా చిత్రం మద్దతు ఉంది",
+    "dragDrop": "మీ నివేదికను ఇక్కడ లాగి వదలండి",
+    "or": "లేదా",
+    "browse": "ఫైల్‌లను బ్రౌజ్ చేయండి",
+    "processing": "మీ నివేదికను విశ్లేషిస్తోంది...",
+    "success": "నివేదిక విజయవంతంగా విశ్లేషించబడింది",
+    "failed": "నివేదికను చదవలేకపోయాము",
+    "confirmTitle": "సేకరించిన విలువల సమీక్ష",
+    "confirmSubtitle": "దయచేసి విశ్లేషణకు ముందు ఈ విలువలను ధృవీకరించండి"
+  },
+  "result": {
+    "title": "నివేదిక విశ్లేషణ",
+    "aiSummary": "AI సారాంశం",
+    "testResults": "పరీక్ష ఫలితాలు",
+    "keyInsights": "ముఖ్య అంతర్దృష్టులు",
+    "recommendations": "సిఫార్సులు",
+    "normalRange": "సాధారణ పరిధి",
+    "yourValue": "మీ విలువ",
+    "aiUnavailable": "AI సారాంశం అందుబాటులో లేదు"
+  },
+  "sections": {
+    "keyInsights": "ముఖ్య అంతర్దృష్టులు",
+    "labBreakdown": "ల్యాబ్ ఫలితాల వివరణ",
+    "aiAssessment": "AI అదనపు మూల్యాంకనం",
+    "extractionConfidence": "వెలికితీత విశ్వసనీయత",
+    "dailyLifeImpact": "రోజువారీ జీవిత ప్రభావం",
+    "actionableSteps": "ఆచరణీయ దశలు",
+    "possibleCauses": "సాధ్యమయ్యే కారణాలు",
+    "followUpSchedule": "ఫాలో-అప్ షెడ్యూల్"
+  },
+  "actions": {
+    "askAi": "ఈ నివేదిక గురించి AIని అడగండి",
+    "uploadAnother": "మరొక నివేదికను అప్‌లోడ్ చేయండి",
+    "followUpConsult": "ఫాలో-అప్ షెడ్యూల్ కోసం మీ వైద్యుడిని సంప్రదించండి."
+  },
+  "table": {
+    "testName": "పరీక్ష పేరు",
+    "value": "విలువ",
+    "unit": "యూనిట్",
+    "referenceRange": "సూచన పరిధి",
+    "status": "స్థితి",
+    "meaning": "అర్థం",
+    "review": "సమీక్ష",
+    "requiresMedical": "వైద్య సమీక్ష అవసరం",
+    "standardRange": "ప్రామాణిక పరిధి మారుతుంది",
+    "normalRange": "సాధారణ పరిధి"
+  },
+  "errors": {
+    "queryLimit": "ప్రశ్న పొడవు పరిమితి దాటింది. గరిష్టం: 500 అక్షరాలు"
+  }
+}
