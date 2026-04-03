@@ -1,12 +1,14 @@
 import React from 'react';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const KeyInsightsCard = ({ insights }) => {
+    const { t } = useTranslation('report');
     if (!insights || insights.length === 0) return null;
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Key Insights</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{t('sections.keyInsights')}</h3>
             <div className="space-y-3">
                 {insights.map((insight, idx) => {
                     const isLow = insight.status?.toUpperCase() === 'LOW';

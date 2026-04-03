@@ -1,7 +1,9 @@
 import React from 'react';
 import { IconAlertTriangle, IconActivityHeartbeat } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const ScanWarnings = ({ contraindications, interactions, crossAnalysis }) => {
+    const { t } = useTranslation('scanResult');
     const hasContra = contraindications && contraindications.length > 0;
     const hasInteracts = interactions && interactions.length > 0;
     const hasCross = crossAnalysis && crossAnalysis.length > 0;
@@ -33,12 +35,12 @@ const ScanWarnings = ({ contraindications, interactions, crossAnalysis }) => {
                 <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
                         <IconAlertTriangle size={20} className="text-amber-500 mr-2" />
-                        Medical Warnings
+                        {t('warnings.title')}
                     </h3>
                     
                     {hasContra && (
                         <div className="mb-6">
-                            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-500 mb-2 uppercase tracking-wide">Do not take if you have:</h4>
+                            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-500 mb-2 uppercase tracking-wide">{t('warnings.doNotTake')}</h4>
                             <ul className="space-y-2">
                                 {contraindications.map((c, i) => (
                                     <li key={i} className="flex items-start text-sm text-slate-700 dark:text-slate-300">
@@ -51,7 +53,7 @@ const ScanWarnings = ({ contraindications, interactions, crossAnalysis }) => {
                     
                     {hasInteracts && (
                         <div>
-                            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-500 mb-2 uppercase tracking-wide">Interacts with:</h4>
+                            <h4 className="text-sm font-bold text-amber-900 dark:text-amber-500 mb-2 uppercase tracking-wide">{t('warnings.interactsWith')}</h4>
                             <ul className="space-y-2">
                                 {interactions.map((inter, i) => (
                                     <li key={i} className="flex items-start text-sm text-slate-700 dark:text-slate-300">

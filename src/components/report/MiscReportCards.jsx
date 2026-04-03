@@ -1,13 +1,15 @@
 import React from 'react';
 import { IconStethoscope, IconPercentage } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 export const PossibleCauses = ({ causes }) => {
+    const { t } = useTranslation('report');
     if (!causes || causes.length === 0) return null;
 
     return (
         <div className="bg-amber-50 dark:bg-amber-900/10 rounded-3xl p-6 border border-amber-100 dark:border-amber-900/30">
             <h3 className="text-lg font-bold text-amber-900 dark:text-amber-500 mb-4 flex items-center">
-                <IconStethoscope size={20} className="mr-2" /> Possible Causes
+                <IconStethoscope size={20} className="mr-2" /> {t('sections.possibleCauses')}
             </h3>
             <ul className="space-y-3">
                 {causes.map((cause, i) => (
@@ -22,6 +24,7 @@ export const PossibleCauses = ({ causes }) => {
 };
 
 export const ConfidenceBreakdown = ({ confidence }) => {
+    const { t } = useTranslation('report');
     if (!confidence) return null;
     
     // Fallback parsing if confidence is string JSON instead of object (e.g. from backend)
@@ -37,7 +40,7 @@ export const ConfidenceBreakdown = ({ confidence }) => {
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center">
                 <IconPercentage size={18} className="text-indigo-500 mr-2 border border-indigo-200 dark:border-indigo-800 rounded-full p-0.5" /> 
-                Extraction Confidence
+                {t('sections.extractionConfidence')}
             </h3>
             <div className="flex items-center space-x-4 mb-3">
                 <div className="flex-1 w-full bg-slate-100 dark:bg-slate-700 rounded-full h-3 max-w-xs">

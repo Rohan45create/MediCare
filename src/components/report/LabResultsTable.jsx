@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { IconInfoCircle } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const LabResultsTable = ({ tests }) => {
+    const { t } = useTranslation('report');
     const [hoveredTest, setHoveredTest] = useState(null);
 
     if (!tests || tests.length === 0) return null;
 
     return (
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Lab Results Breakdown</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">{t('sections.labBreakdown')}</h3>
             <div className="overflow-x-auto overflow-y-visible">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-100 dark:border-slate-700 text-left text-slate-500 text-xs tracking-wider uppercase">
-                            <th className="py-3 px-4 font-semibold">Test Name</th>
-                            <th className="py-3 px-4 font-semibold">Value</th>
-                            <th className="py-3 px-4 font-semibold">Unit</th>
-                            <th className="py-3 px-4 font-semibold">Reference Range</th>
-                            <th className="py-3 px-4 font-semibold text-center">Status</th>
-                            <th className="py-3 px-4 font-semibold">Meaning</th>
+                            <th className="py-3 px-4 font-semibold">{t('table.testName')}</th>
+                            <th className="py-3 px-4 font-semibold">{t('table.value')}</th>
+                            <th className="py-3 px-4 font-semibold">{t('table.unit')}</th>
+                            <th className="py-3 px-4 font-semibold">{t('table.referenceRange')}</th>
+                            <th className="py-3 px-4 font-semibold text-center">{t('table.status')}</th>
+                            <th className="py-3 px-4 font-semibold">{t('table.meaning')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
@@ -67,7 +69,7 @@ const LabResultsTable = ({ tests }) => {
                                     </td>
                                     
                                     <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-sm max-w-xs truncate">
-                                        {tv.meaning || 'Standard metric.'}
+                                        {tv.meaning || t('table.standardRange')}
                                     </td>
                                 </tr>
                             );

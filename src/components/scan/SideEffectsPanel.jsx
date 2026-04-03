@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { IconShieldCheck } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const SideEffectsPanel = ({ effects }) => {
+    const { t } = useTranslation('scanResult');
     const [tab, setTab] = useState('mild');
 
     if (!effects || (!effects.mild && !effects.serious)) return null;
@@ -13,7 +15,7 @@ const SideEffectsPanel = ({ effects }) => {
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
                 <IconShieldCheck size={20} className="text-red-500 mr-2" />
-                Side Effects
+                {t('sideEffects.title')}
             </h3>
             
             <div className="flex space-x-2 mb-4">
@@ -21,13 +23,13 @@ const SideEffectsPanel = ({ effects }) => {
                     onClick={() => setTab('mild')}
                     className={`flex-1 py-2 text-sm font-bold rounded-xl transition ${tab === 'mild' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400' : 'bg-slate-50 text-slate-500 dark:bg-slate-900/50 dark:text-slate-400'}`}
                 >
-                    Mild ({mildList.length})
+                    {t('sideEffects.mild')} ({mildList.length})
                 </button>
                 <button 
                     onClick={() => setTab('serious')}
                     className={`flex-1 py-2 text-sm font-bold rounded-xl transition ${tab === 'serious' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-slate-50 text-slate-500 dark:bg-slate-900/50 dark:text-slate-400'}`}
                 >
-                    Serious ({seriousList.length})
+                    {t('sideEffects.serious')} ({seriousList.length})
                 </button>
             </div>
 
