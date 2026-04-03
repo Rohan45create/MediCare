@@ -13,6 +13,8 @@ import { PossibleCauses, ConfidenceBreakdown } from '../components/report/MiscRe
 import SeverityMeter from '../components/report/SeverityMeter';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { useTranslation } from 'react-i18next';
+import { useTranslateContent } from '../hooks/useTranslateContent';
 
 const riskColors = {
     LOW: { bg: 'bg-emerald-100 dark:bg-emerald-900/30', text: 'text-emerald-600 dark:text-emerald-400', icon: IconCircleCheckFilled },
@@ -21,6 +23,7 @@ const riskColors = {
 };
 
 const ReportResults = () => {
+    const { t } = useTranslation(['report', 'common']);
     const { reportId } = useParams();
     const navigate = useNavigate();
     const [data, setData] = useState(null);
@@ -113,6 +116,13 @@ const ReportResults = () => {
     const RiskStyle = riskColors[riskLevel] || riskColors.LOW;
     const RiskIcon = RiskStyle.icon;
 
+    // Translate dynamic AI content
+    const translatedImpactExplanation = useTranslateContent(result?.impactExplanation);
+    const translatedRecommendations = useTranslateContent(result?.recommendations);
+    const translatedPossibleCauses = useTranslateContent(result?.possibleCauses);
+    const translatedFollowUpSchedule = useTranslateContent(result?.followUpSchedule);
+    const translatedAiEnhancement = useTranslateContent(result?.aiEnhancement);
+
     // Result mapping is mostly direct to component props now
 
     const handleDownloadPDF = async () => {
@@ -191,7 +201,7 @@ const ReportResults = () => {
             <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-[calc(100vh-64px)] font-sans flex items-center justify-center p-4">
                 <div className="max-w-md w-full text-center bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700">
                     <IconCircleX size={56} className="text-red-500 mx-auto mb-4" />
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Extraction Failed</h2>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('upload.failed')}</h2>
                     <p className="text-slate-500 dark:text-slate-400 mb-6 font-medium">
                         We couldn't confidently read the test values from your uploaded file. It might be blurry, handwritten, or not a standard lab report.
                     </p>
@@ -216,9 +226,9 @@ const ReportResults = () => {
                             <IconArrowLeft size={20} />
                         </button>
                         <div>
-                            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Verify Extracted Data</h1>
+                            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">{t('upload.confirmTitle')}</h1>
                             <p className="text-slate-500 dark:text-slate-400 mt-1">
-                                Check the raw OCR output on the left and correct the extracted values on the right.
+                                {t('upload.confirmSubtitle')}
                             </p>
                         </div>
                     </div>
@@ -312,7 +322,7 @@ const ReportResults = () => {
                                 <IconArrowLeft size={20} />
                             </button>
                             <div>
-                                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Report Analysis</h1>
+                                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">{t('result.title')}</h1>
                                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                                     {data?.fileName} &nbsp;·&nbsp;
                                     <span className="flex items-center inline-flex gap-1">
@@ -342,19 +352,19 @@ const ReportResults = () => {
                         <KeyInsightsCard insights={result?.keyInsights} />
 
                         {/* Impact Explanation Component */}
-                        <ImpactExplanation explanation={result?.impactExplanation} />
+                        <ImpactExplanation explanation={translatedImpactExplanation} />
 
                         {/* Lab Results Table Component */}
                         <LabResultsTable tests={result?.tests || []} />
 
                         {/* AI Enhancement (Fallback/Extra) */}
-                        {result?.aiEnhancement && (
+                        {translatedAiEnhancement && (
                             <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
                                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
-                                    <IconBrain size={20} className="text-blue-600 mr-2" /> AI Extra Assessment
+                                    <IconBrain size={20} className="text-blue-600 mr-2" /> {t('sections.aiAssessment')}
                                 </h3>
                                 <div className="text-sm text-slate-600 dark:text-slate-300">
-                                    <MarkdownRenderer content={result.aiEnhancement} />
+                                    <MarkdownRenderer content={translatedAiEnhancement} />
                                 </div>
                             </div>
                         )}
@@ -365,16 +375,16 @@ const ReportResults = () => {
                     <div className="space-y-6">
 
                         {/* Actionable Steps */}
-                        <ActionableSteps steps={result?.recommendations} />
+                        <ActionableSteps steps={translatedRecommendations} />
 
                         {/* Possible Causes */}
-                        <PossibleCauses causes={result?.possibleCauses} />
+                        <PossibleCauses causes={translatedPossibleCauses} />
 
                         {/* Follow-up */}
                         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-3xl p-6 border border-blue-100 dark:border-blue-900/50">
-                            <h3 className="text-sm font-bold text-blue-900 dark:text-blue-400 mb-4">Follow-up Schedule</h3>
+                            <h3 className="text-sm font-bold text-blue-900 dark:text-blue-400 mb-4">{t('sections.followUpSchedule')}</h3>
                             <p className="text-sm text-blue-800/80 dark:text-blue-300/80 leading-relaxed whitespace-pre-wrap">
-                                {result?.followUpSchedule || 'Consult your doctor for a follow-up schedule.'}
+                                {translatedFollowUpSchedule || t('actions.followUpConsult')}
                             </p>
                         </div>
 
@@ -383,20 +393,20 @@ const ReportResults = () => {
                             onClick={() => navigate('/chat')}
                             className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors text-sm"
                         >
-                            Ask AI About This Report
+                            {t('actions.askAi')}
                         </button>
                         <button
                             onClick={() => navigate('/reports')}
                             className="w-full py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold transition-colors text-sm"
                         >
-                            Upload Another Report
+                            {t('actions.uploadAnother')}
                         </button>
                     </div>
                 </div>
 
                 <div className="mt-12 text-center border-t border-slate-200 dark:border-slate-800 pt-8 opacity-70">
                     <p className="text-[10px] text-slate-500 max-w-2xl mx-auto">
-                        Disclaimer: This analysis is generated by AI and is for informational purposes only. Always consult a qualified healthcare professional before making medical decisions.
+                        {t('result.disclaimer')}
                     </p>
                 </div>
             </div>

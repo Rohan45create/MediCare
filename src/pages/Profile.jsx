@@ -21,8 +21,10 @@ import {
     IconCalendar,
     IconCircleX
 } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const Profile = () => {
+    const { t } = useTranslation('profile');
     const dispatch = useDispatch();
     const { user: authUser, token } = useSelector((state) => state.auth);
 
@@ -180,7 +182,7 @@ const Profile = () => {
                             )
                         ) : (
                             <p className="font-semibold text-slate-900 dark:text-white text-sm sm:text-base break-all">
-                                {field === 'phone' && user[field] ? user[field] : user[field] || 'Not set'}
+                                {field === 'phone' && user[field] ? user[field] : user[field] || t('personal.notSet')}
                             </p>
                         )}
 
@@ -290,15 +292,15 @@ const Profile = () => {
                                 </div>
                             )}
 
-                            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">Patient Member</p>
+                            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">{t('personal.patientMember')}</p>
                         </div>
 
                         {/* Personal Details Editable Cards */}
                         <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-sm border border-slate-100 dark:border-slate-800 space-y-3">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-4 ml-2">Personal Details</h3>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-4 ml-2">{t('personal.title')}</h3>
                             {renderEditableField(<IconMail size={20} />, "Email Address", "email", "email")}
-                            {renderEditableField(<IconPhone size={20} />, "Mobile Phone", "phone", "tel")}
-                            {renderEditableField(<IconCalendar size={20} />, "Date of Birth", "dob", "date")}
+                            {renderEditableField(<IconPhone size={20} />, t('personal.mobilePhone'), "phone", "tel")}
+                            {renderEditableField(<IconCalendar size={20} />, t('personal.dateOfBirth'), "dob", "date")}
                         </div>
                     </div>
 
@@ -312,20 +314,20 @@ const Profile = () => {
                                     <IconChartBarPopular size={24} className="text-amber-500 sm:w-7 sm:h-7" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">Check Progress</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">View your health metrics and daily goals</p>
+                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('progress.title')}</h3>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{t('progress.subtitle')}</p>
                                 </div>
                             </div>
                             <Link to="/dashboard">
                                 <button className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-sm font-semibold text-slate-900 dark:text-white transition-colors">
-                                    View
+                                    {t('progress.button')}
                                 </button>
                             </Link>
                         </div>
 
                         {/* Navigation List Grid for Desktop */}
                         <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-4 shadow-sm border border-slate-100 dark:border-slate-800 flex-1">
-                            <h3 className="font-bold text-slate-900 dark:text-white mb-2 ml-4 mt-2">Preferences & Settings</h3>
+                            <h3 className="font-bold text-slate-900 dark:text-white mb-2 ml-4 mt-2">{t('preferences.title')}</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
 
                                 <Link to="/settings" className="flex items-center justify-between p-4 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800/50 rounded-2xl transition-colors group border border-transparent hover:border-slate-100 dark:hover:border-slate-800">
@@ -333,7 +335,7 @@ const Profile = () => {
                                         <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
                                             <IconSettings size={20} />
                                         </div>
-                                        <span className="font-semibold text-slate-900 dark:text-white">App settings</span>
+                                        <span className="font-semibold text-slate-900 dark:text-white">{t('preferences.appSettings')}</span>
                                     </div>
                                     <IconChevronRight size={20} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors" />
                                 </Link>
@@ -344,8 +346,8 @@ const Profile = () => {
                                             <IconCirclesRelation size={20} />
                                         </div>
                                         <div>
-                                            <span className="font-semibold text-slate-900 dark:text-white block">Profile setup</span>
-                                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mt-0.5 block">Needs Update</span>
+                                            <span className="font-semibold text-slate-900 dark:text-white block">{t('preferences.profileSetup')}</span>
+                                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wide mt-0.5 block">{t('preferences.needsUpdate')}</span>
                                         </div>
                                     </div>
                                     <IconChevronRight size={20} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors" />
@@ -356,7 +358,7 @@ const Profile = () => {
                                         <div className="w-10 h-10 rounded-full bg-cyan-100 dark:bg-cyan-900/40 flex items-center justify-center text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform">
                                             <IconHistory size={20} />
                                         </div>
-                                        <span className="font-semibold text-slate-900 dark:text-white">Medical History</span>
+                                        <span className="font-semibold text-slate-900 dark:text-white">{t('preferences.medicalHistory')}</span>
                                     </div>
                                     <IconChevronRight size={20} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors" />
                                 </Link>
@@ -366,7 +368,7 @@ const Profile = () => {
                                         <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
                                             <IconLock size={20} />
                                         </div>
-                                        <span className="font-semibold text-slate-900 dark:text-white">App permissions</span>
+                                        <span className="font-semibold text-slate-900 dark:text-white">{t('preferences.appPermissions')}</span>
                                     </div>
                                     <IconChevronRight size={20} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors" />
                                 </Link>

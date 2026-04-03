@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { IconActivity, IconShieldCheck, IconFileText, IconLayoutDashboard, IconSearch } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const Landing = () => {
+    const { t } = useTranslation('landing');
     return (
         <div className="w-full bg-slate-50 dark:bg-[#0b1121] min-h-screen font-sans">
 
@@ -15,11 +17,11 @@ const Landing = () => {
                     </div>
 
                     <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight mb-6">
-                        Your AI <span className="text-blue-600">Health</span><br />Guardian
+                        {t('hero.herotitle1')} <span className="text-blue-600">{t('hero.herotitle2')}</span><br />{t('hero.herotitle3')}
                     </h1>
 
                     <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-lg mx-auto lg:mx-0">
-                        Professional healthcare assistant for medicine scanning, report analysis, and health tracking. Designed for clarity and ease of use for all ages.
+                        {t('hero.herodesc')}
                     </p>
 
                     <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start">
@@ -27,7 +29,7 @@ const Landing = () => {
                             to="/scanner"
                             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-xl font-bold transition-transform transform hover:-translate-y-0.5 shadow-lg shadow-blue-500/30"
                         >
-                            Try ScanSense AI
+                            {t('hero.herobtn')}
                         </Link>
                         <Link
                             to="/login"
@@ -95,10 +97,10 @@ const Landing = () => {
             {/* Features Section */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 pb-24">
                 <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h4 className="text-sm font-bold text-blue-600 mb-3 tracking-widest uppercase">Intelligent Features</h4>
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-6">Advanced Care for Everyone, Simplified.</h2>
+                    <h4 className="text-sm font-bold text-blue-600 mb-3 tracking-widest uppercase">{t('features.title')}</h4>
+                    <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-6">{t('features.heading')}</h2>
                     <p className="text-slate-600 dark:text-slate-400">
-                        Empowering you with AI-driven tools to manage your health safely and effectively, without the medical jargon.
+                        {t('features.subheading')}
                     </p>
                 </div>
 
@@ -107,29 +109,29 @@ const Landing = () => {
                         <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                             <IconSearch size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Medicine Scanner</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Instantly identify pills, check dosages, and see potential side effects using ScanSense AI.</p>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{t('features.scan.title')}</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{t('features.scan.desc')}</p>
                     </div>
                     <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
                         <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                             <IconFileText size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Report Analysis</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Upload complex medical reports and get simplified, easy-to-read summaries in seconds.</p>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{t('features.report.title')}</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{t('features.report.desc')}</p>
                     </div>
                     <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
                         <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                             <IconLayoutDashboard size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Health Dashboard</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Track your vitals, medication history, and appointments in one clean, large-font interface.</p>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{t('features.chatbot.title')}</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{t('features.chatbot.desc')}</p>
                     </div>
                     <div className="bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
                         <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                             <IconShieldCheck size={24} />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">Fake Drug Detection</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Verify the authenticity of your medication with our global database and security checks.</p>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">{t('features.history.title')}</h3>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{t('features.history.desc')}</p>
                     </div>
                 </div>
             </section>
@@ -140,8 +142,8 @@ const Landing = () => {
 
                     {/* Header Block (Static on all devices) */}
                     <div className="w-full lg:w-1/3 flex flex-col justify-center shrink-0">
-                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4">What our users are saying</h2>
-                        <p className="text-slate-600 dark:text-slate-400 mb-8">Join thousands of people who trust MediCare for their daily health management.</p>
+                        <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white mb-4">{t('testimonial.title')}</h2>
+                        <p className="text-slate-600 dark:text-slate-400 mb-8">{t('testimonial.subheading')}</p>
                         <div className="flex -space-x-4">
                             <div className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-900 bg-slate-300"></div>
                             <div className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-900 bg-slate-400"></div>
@@ -158,12 +160,12 @@ const Landing = () => {
                             <div className="flex text-yellow-400 mb-4">
                                 ★★★★★
                             </div>
-                            <p className="text-slate-700 dark:text-slate-300 italic mb-6 flex-1">"As an elderly person, I used to struggle with all the different pills. The scanner is a life-saver, literally! Everything is so clear and easy to read."</p>
+                            <p className="text-slate-700 dark:text-slate-300 italic mb-6 flex-1">"{t('testimonial.feedback1.comment')}"</p>
                             <div className="flex items-center mt-auto">
                                 <div className="w-10 h-10 rounded-full bg-slate-300 mr-4 shrink-0"></div>
                                 <div>
-                                    <p className="font-bold text-slate-900 dark:text-white text-sm">Robert Chen</p>
-                                    <p className="text-xs text-slate-500">Retired Teacher, 68</p>
+                                    <p className="font-bold text-slate-900 dark:text-white text-sm">{t('testimonial.feedback1.name')}</p>
+                                    <p className="text-xs text-slate-500">{t('testimonial.feedback1.prof')}</p>
                                 </div>
                             </div>
                         </div>
@@ -173,12 +175,12 @@ const Landing = () => {
                             <div className="flex text-yellow-400 mb-4">
                                 ★★★★★
                             </div>
-                            <p className="text-slate-700 dark:text-slate-300 italic mb-6 flex-1">"The report analysis tool helped me understand my lab results before I even talked to my doctor. It made me feel much more in control of my health."</p>
+                            <p className="text-slate-700 dark:text-slate-300 italic mb-6 flex-1">"{t('testimonial.feedback2.comment')}"</p>
                             <div className="flex items-center mt-auto">
                                 <div className="w-10 h-10 rounded-full bg-slate-300 mr-4 shrink-0"></div>
                                 <div>
-                                    <p className="font-bold text-slate-900 dark:text-white text-sm">Sarah Miller</p>
-                                    <p className="text-xs text-slate-500">Freelance Designer, 34</p>
+                                    <p className="font-bold text-slate-900 dark:text-white text-sm">{t('testimonial.feedback2.name')}</p>
+                                    <p className="text-xs text-slate-500">{t('testimonial.feedback2.prof')}</p>
                                 </div>
                             </div>
                         </div>
@@ -190,16 +192,16 @@ const Landing = () => {
             {/* CTA Section */}
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
                 <div className="bg-blue-600 rounded-[2.5rem] p-10 md:p-16 text-center text-white shadow-2xl flex flex-col items-center">
-                    <h2 className="text-3xl md:text-5xl font-extrabold mb-6">Ready to take control<br className="hidden md:block" /> of your health?</h2>
+                    <h2 className="text-3xl md:text-5xl font-extrabold mb-6">{t('package.title1')} <br className="hidden md:block" /> {t('package.title2')}</h2>
                     <p className="text-blue-100 mb-10 max-w-xl text-lg">
-                        Start your 14-day free trial today. No credit card required. Experience the future of personalized AI healthcare.
+                        {t('package.subheading')}
                     </p>
                     <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                         <Link to="/register" className="bg-white text-blue-600 px-8 py-3.5 rounded-xl font-bold hover:bg-slate-50 transition-colors w-full sm:w-auto">
-                            Get Started Now
+                            {t('package.btn1')}
                         </Link>
                         <Link to="/contact" className="bg-blue-700 text-white border border-blue-500 hover:bg-blue-800 px-8 py-3.5 rounded-xl font-bold transition-colors w-full sm:w-auto">
-                            Book a Demo
+                            {t('package.btn2')}
                         </Link>
                     </div>
                 </div>

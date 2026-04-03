@@ -10,8 +10,11 @@ import ScanWarnings from '../components/scan/ScanWarnings';
 import Alternatives from '../components/scan/Alternatives';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { useTranslation } from 'react-i18next';
+import { useTranslateContent } from '../hooks/useTranslateContent';
 
 const ScanResult = () => {
+    const { t } = useTranslation('scanResult');
     const location = useLocation();
     const navigate = useNavigate();
     const { scanId } = useParams();
@@ -48,6 +51,9 @@ const ScanResult = () => {
     const safetyWarnings = scanResult?.safetyWarnings || [];
     const hasNsqAlert = scanResult?.nsqAlert || false;
     const description = scanResult?.description || 'A commonly used prescription medication.';
+
+    const translatedAiExplanation = useTranslateContent(aiExplanation);
+    const translatedDescription = useTranslateContent(description);
 
     const showRawExplanation = !scanResult?.usageGuide && !scanResult?.alternatives && !scanResult?.sideEffects;
 
@@ -107,9 +113,9 @@ const ScanResult = () => {
                     <div className="flex justify-between items-start">
                         <div>
                             <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center">
-                                Scan Result Details
+                                {t('scanner:result.title', 'Medicine Information')}
                             </h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Detailed analysis of your scanned medication and safety profile.</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{t('subtitle')}</p>
                         </div>
                         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
                             <button
@@ -117,7 +123,7 @@ const ScanResult = () => {
                                 className="hidden sm:flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
                             >
                                 <IconMessage size={18} />
-                                <span>Chat with AI</span>
+                                <span>{t('chatAi')}</span>
                             </button>
                             <button onClick={handleDownloadPDF} className="flex items-center justify-center p-2 rounded-lg bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition">
                                 <IconDownload size={20} />
@@ -130,7 +136,7 @@ const ScanResult = () => {
                 {loading && (
                     <div className="text-center py-12">
                         <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <p className="text-slate-500 dark:text-slate-400">Looking up medicine details...</p>
+                        <p className="text-slate-500 dark:text-slate-400">{t('scanner:result.loading', 'Loading...')}</p>
                     </div>
                 )}
 
@@ -139,14 +145,14 @@ const ScanResult = () => {
                         <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-6 shadow-inner border border-red-200 dark:border-red-900/50">
                             <IconAlertTriangle size={40} className="text-red-500" />
                         </div>
-                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">Scan Failed</h2>
+                        <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">{t('scanner:result.failed', 'Scan Failed')}</h2>
                         <p className="text-slate-500 dark:text-slate-400 max-w-md mb-8">{error}</p>
                         <div className="flex flex-col sm:flex-row gap-4">
                             <button onClick={() => navigate('/scansense')} className="px-6 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold transition-colors shadow-sm">
-                                Try Scanning Again
+                                {t('scanner:result.tryAgain', 'Try Again')}
                             </button>
                             <button onClick={() => navigate('/chatbot')} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors shadow-md">
-                                Ask AI Assistant Instead
+                                {t('askAiBtn')}
                             </button>
                         </div>
                     </div>
@@ -168,28 +174,28 @@ const ScanResult = () => {
                                             <span className="ml-2 text-slate-400 font-medium tracking-normal text-[10px]">Ref: #SCAN-{Math.floor(Math.random() * 90000) + 10000}</span>
                                         </div>
                                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{medicineName}</h2>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm mb-1 font-medium">Generic: {genericName}</p>
+                                        <p className="text-slate-500 dark:text-slate-400 text-sm mb-1 font-medium">{t('generic')} {genericName}</p>
                                         <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
-                                            {description}
+                                            {translatedDescription}
                                         </p>
                                         {showRawExplanation && aiExplanation && (
                                             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 mt-2">
                                                 <div className="flex items-center space-x-2 mb-2">
                                                     <IconInfoCircle size={18} className="text-blue-600 dark:text-blue-400" />
-                                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-400">AI Analysis Overview</p>
+                                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-400">{t('scanner:result.overview', 'Overview')}</p>
                                                 </div>
-                                                <MarkdownRenderer content={aiExplanation} />
+                                                <MarkdownRenderer content={translatedAiExplanation} />
                                             </div>
                                         )}
                                     </div>
                                     <div className="space-y-2 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
                                         <div className="flex items-center text-xs text-slate-500 font-medium">
                                             <IconCalendar size={14} className="mr-2 opacity-70" />
-                                            Scanned on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                            {t('scannedOn')} {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                         <div className="flex items-center text-xs text-slate-500 font-medium">
                                             <IconMapPin size={14} className="mr-2 opacity-70" />
-                                            Barcode: {scanId ? 'Retrieved from History' : scannedData}
+                                            {scanId ? t('barcodeHistory') : `Barcode: ${scannedData}`}
                                         </div>
                                     </div>
                                 </div>
@@ -199,7 +205,7 @@ const ScanResult = () => {
                         {/* == MOBILE 2 | DESKTOP RIGHT TOP == Safety Card */}
                         <div className="order-2 lg:col-span-1 lg:col-start-3">
                             <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col h-full">
-                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Safety Status</p>
+                                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">{t('safety.title')}</p>
 
                                 <div className="flex items-center space-x-4 mb-6">
                                     <div className={`w-14 h-14 rounded-full flex items-center justify-center shrink-0 ${hasNsqAlert ? 'bg-red-100 dark:bg-red-900/30 text-red-500' : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-500'}`}>
@@ -207,17 +213,17 @@ const ScanResult = () => {
                                     </div>
                                     <div>
                                         <h3 className={`text-3xl font-extrabold leading-tight ${hasNsqAlert ? 'text-red-500' : 'text-emerald-500'}`}>
-                                            {hasNsqAlert ? 'ALERT' : 'SAFE'}
+                                            {hasNsqAlert ? t('alert') : t('dosage.safe')}
                                         </h3>
                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                            {hasNsqAlert ? `${safetyWarnings.length} NSQ alert(s) found` : 'No critical profile clashes.'}
+                                            {hasNsqAlert ? t('nsqAlert') : t('scanner:status.safe', 'Safe to use')}
                                         </p>
                                     </div>
                                 </div>
 
                                 <div className="mt-auto">
                                     <div className="flex justify-between text-xs font-semibold text-slate-500 mb-2">
-                                        <span>FDA Data: {scanResult?.fdaSafetyData !== 'FDA safety data temporarily unavailable.' ? 'Available' : 'Unavailable'}</span>
+                                        <span>{t('safety.fdaData')}: {scanResult?.fdaSafetyData !== 'FDA safety data temporarily unavailable.' ? t('safety.available') : t('safety.notAvailable')}</span>
                                     </div>
                                     <div className="w-full bg-slate-100 dark:bg-slate-700 rounded-full h-2">
                                         <div className={`h-2 rounded-full ${hasNsqAlert ? 'bg-red-500 w-[40%]' : 'bg-emerald-500 w-[92%]'}`}></div>
@@ -233,7 +239,7 @@ const ScanResult = () => {
                                 <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
                                         <IconAlertTriangle size={20} className="text-amber-500 mr-2" />
-                                        Safety Warnings ({safetyWarnings.length})
+                                        {t('warnings.title')} ({safetyWarnings.length})
                                     </h3>
                                     <div className="space-y-4">
                                         {safetyWarnings.map((w, i) => (
@@ -253,11 +259,11 @@ const ScanResult = () => {
                                 <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center">
                                         <IconAlertTriangle size={20} className="text-amber-500 mr-2" />
-                                        Interaction Warnings
+                                        {t('warnings.title')}
                                     </h3>
                                     <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/30 rounded-2xl p-4 flex items-center space-x-3">
                                         <IconCircleCheckFilled size={20} className="text-emerald-600 shrink-0" />
-                                        <p className="text-sm text-emerald-800 dark:text-emerald-400">No NSQ safety alerts found for this medicine.</p>
+                                        <p className="text-sm text-emerald-800 dark:text-emerald-400">{t('scanner:status.safe', 'No NSQ safety alerts found for this medicine.')}</p>
                                     </div>
                                 </div>
                             )}
@@ -285,37 +291,37 @@ const ScanResult = () => {
                             <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
                                 <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center">
                                     <IconClock size={18} className="text-indigo-500 mr-2" />
-                                    Medication Schedule
+                                    {t('schedule.title')}
                                 </h3>
 
                                 {/* Placeholder for schedule items */}
                                 <div className="space-y-3 mb-6">
                                     <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
                                         <div className="flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            <IconSun size={16} className="text-amber-500 mr-2" /> Morning
+                                            <IconSun size={16} className="text-amber-500 mr-2" /> {t('schedule.morning')}
                                         </div>
                                         <div className="text-sm text-slate-500 font-mono">08:00 AM</div>
                                     </div>
                                     <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800 opacity-60">
                                         <div className="flex items-center text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            <IconMoon size={16} className="text-indigo-400 mr-2" /> Evening
+                                            <IconMoon size={16} className="text-indigo-400 mr-2" /> {t('schedule.evening')}
                                         </div>
                                         <div className="text-sm text-slate-400 font-mono">N/A</div>
                                     </div>
                                 </div>
                                 <button className="w-full py-3 rounded-xl border-2 border-blue-100 text-blue-600 dark:border-blue-900 dark:text-blue-400 dark:hover:bg-blue-900/20 hover:bg-blue-50 font-bold transition-colors text-sm">
-                                    Set Reminders
+                                    {t('schedule.setReminders')}
                                 </button>
                             </div>
 
                             <div className="hidden lg:block bg-blue-50 dark:bg-blue-900/20 rounded-3xl p-6 border border-blue-100 dark:border-blue-900/50">
-                                <h3 className="text-sm font-bold text-blue-900 dark:text-blue-400 mb-2">Need Help?</h3>
+                                <h3 className="text-sm font-bold text-blue-900 dark:text-blue-400 mb-2">{t('needHelp')}</h3>
                                 <p className="text-xs text-blue-800/80 dark:text-blue-300/80 mb-6 leading-relaxed">
-                                    Our AI healthcare assistant can answer specific questions about this medication's side effects or dosages.
+                                    {t('helpDesc')}
                                 </p>
                                 <button onClick={() => navigate('/chat')} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold transition-colors text-sm flex items-center justify-center space-x-2">
                                     <IconMessage size={16} />
-                                    <span>Ask AI Assistant</span>
+                                    <span>{t('askAiBtn')}</span>
                                 </button>
                             </div>
                         </div>
@@ -336,7 +342,7 @@ const ScanResult = () => {
             <div className="lg:hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm z-50">
                 <button onClick={() => navigate('/chat')} className="w-full py-4 rounded-2xl bg-blue-600 shadow-xl shadow-blue-600/30 text-white font-bold text-sm flex items-center justify-center space-x-2">
                     <IconMessage size={18} />
-                    <span>Ask AI Assistant</span>
+                    <span>{t('askAiBtn')}</span>
                 </button>
             </div>
         </div>

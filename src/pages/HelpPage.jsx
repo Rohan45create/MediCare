@@ -7,8 +7,10 @@ import InfoCard from '../components/help/InfoCard';
 import NearbyHospitalsMap from '../components/help/NearbyHospitalsMap';
 import SOSButton from '../components/help/SOSButton';
 import { EMERGENCY_TOPICS } from '../data/emergencyData';
+import { useTranslation } from 'react-i18next';
 
 const HelpPage = () => {
+  const { t } = useTranslation('help');
   const [selectedTopicId, setSelectedTopicId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -41,10 +43,10 @@ const HelpPage = () => {
                 🆘
             </span>
             <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4 drop-shadow-sm">
-                Emergency Help
+                {t('title')}
             </h1>
             <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">
-                Step-by-step guidance for medical emergencies.
+                {t('subtitle')}
             </p>
         </div>
       </div>
@@ -62,8 +64,8 @@ const HelpPage = () => {
         {/* SECTION 4 & 5: Search & Chips */}
         <div className="mb-12">
             <div className="text-center mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">What's your emergency?</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Search symptoms or conditions for immediate instructions.</p>
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{t('searchPrompt')}</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{t('searchDesc')}</p>
             </div>
             
             <EmergencySearch onSearch={handleSearch} onSelect={handleSelectTopic} />
@@ -84,7 +86,7 @@ const HelpPage = () => {
                         className="mb-6 flex items-center text-sm font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                    >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-                        Back to all topics
+                        {t('backToTopics')}
                    </button>
                    <InfoCard topic={selectedTopic} />
                 </div>
@@ -92,13 +94,13 @@ const HelpPage = () => {
                 // Search active but no exact UI match (if they hit enter with no matches)
                 <div className="text-center py-20 bg-white dark:bg-slate-800/50 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
                     <span className="text-4xl mb-4 block opacity-50">🔍</span>
-                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">No direct results for "{searchQuery}"</h3>
+                    <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">{t('noResults')} "{searchQuery}"</h3>
                     <p className="text-slate-500 dark:text-gray-400">Try searching for: <strong className="text-slate-700 dark:text-gray-300 pointer-events-none">CPR, choking, bleeding, stroke</strong></p>
                     <button 
                         onClick={() => setSearchQuery('')}
                         className="mt-6 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors underline font-semibold"
                     >
-                        Clear search
+                        {t('clearSearch')}
                     </button>
                 </div>
             ) : (
@@ -119,7 +121,7 @@ const HelpPage = () => {
                             </div>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 flex-1 line-clamp-2 leading-relaxed font-medium">{topic.summary}</p>
                             <div className="mt-auto flex items-center text-sm font-bold text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                                View Guide 
+                                {t('viewGuide')} 
                                 <svg className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                             </div>
                         </div>

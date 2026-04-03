@@ -2,8 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Html5Qrcode } from 'html5-qrcode';
 import { IconCamera, IconPhoto as ImageIcon, IconArrowLeft, IconInfoCircle, IconUpload } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
 
 const Scanner = () => {
+    const { t } = useTranslation('scanner');
     const navigate = useNavigate();
     const [isScanning, setIsScanning] = useState(false);
     const [hasCameraError, setHasCameraError] = useState(false);
@@ -100,8 +102,8 @@ const Scanner = () => {
                             <IconArrowLeft size={20} />
                         </button>
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">ScanSense AI</h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">Scan medicine packaging, barcodes, or QR codes</p>
+                            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('title')}</h1>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{t('subtitle')}</p>
                         </div>
                     </div>
 
@@ -111,9 +113,9 @@ const Scanner = () => {
                         <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center text-blue-600 mb-6">
                             <IconCamera size={28} />
                         </div>
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Identify Medicine</h2>
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('identify')}</h2>
                         <p className="text-slate-500 dark:text-slate-400 mb-8 max-w-md">
-                            Point your camera at a medicine barcode or upload an image from your device.
+                            {t('instruction')}
                         </p>
 
                         {/* Scanner Container */}
@@ -155,7 +157,7 @@ const Scanner = () => {
                                     className="flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition flex-1"
                                 >
                                     <IconCamera size={20} />
-                                    <span>Camera scan</span>
+                                    <span>{t('cameraBtn')}</span>
                                 </button>
                             ) : (
                                 <button
@@ -179,14 +181,14 @@ const Scanner = () => {
                                 className="flex items-center justify-center space-x-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-white px-6 py-3 rounded-xl font-semibold transition border border-slate-200 dark:border-slate-700 flex-1"
                             >
                                 <IconUpload size={20} />
-                                <span>Upload Image</span>
+                                <span>{t('uploadBtn')}</span>
                             </button>
                         </div>
 
                         <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 flex items-start space-x-3 text-sm text-left w-full max-w-md">
                             <IconInfoCircle size={18} className="text-blue-600 mt-0.5 shrink-0" />
                             <p className="text-slate-700 dark:text-slate-300">
-                                <strong>Tip:</strong> Ensure the code is well-lit and centered within the guidelines. You can also upload a QR code image directly from your gallery.
+                                <strong>{t('tip')}</strong> {t('tipText')}
                             </p>
                         </div>
 

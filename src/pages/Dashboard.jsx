@@ -20,10 +20,12 @@ import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import { IconDownload, IconAlertTriangle, IconCircleCheckFilled, IconCircle, IconVideo, IconPhone, IconActivity, IconBrain, IconHeartbeat, IconArrowRight } from '@tabler/icons-react';
 import HealthMetricCard from '../components/HealthMetricCard';
 import TrendGraph from '../components/TrendGraph';
+import { useTranslation } from 'react-i18next';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend, Filler);
 
 const Dashboard = () => {
+    const { t } = useTranslation(['dashboard', 'common']);
     const user = useSelector(selectUser);
     const navigate = useNavigate();
     const [summaryData, setSummaryData] = useState(null);
@@ -158,10 +160,10 @@ const Dashboard = () => {
                 {/* Header */}
                 <div className="flex flex-col mb-8">
                     <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white flex items-center tracking-tight">
-                        Health Overview
+                        {t('title')}
                     </h1>
                     <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
-                        {user?.name || summaryData?.userName ? `Good morning, ${user?.name || summaryData?.userName}. Here is your health overview.` : 'Good morning. Your vitals are stable today.'}
+                        {user?.name || summaryData?.userName ? `Good morning, ${user?.name || summaryData?.userName}.` : 'Good morning.'} {t('subtitle')}
                     </p>
                 </div>
 
@@ -174,7 +176,7 @@ const Dashboard = () => {
                         {/* Section 1: Summary row at top */}
                         <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6 mb-8 flex flex-col md:flex-row items-start md:items-center gap-6">
                             <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Risk Level</span>
+                                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">{t('riskLevel')}</span>
                                 <span className={`px-4 py-1.5 rounded-full text-sm font-bold w-max ${
                                     dynamicSummary.riskLevel === 'HIGH' ? 'bg-red-100 text-red-800' :
                                     dynamicSummary.riskLevel === 'MEDIUM' ? 'bg-amber-100 text-amber-800' :
@@ -185,7 +187,7 @@ const Dashboard = () => {
                             </div>
                             <div className="hidden md:block w-px h-12 bg-slate-200 dark:bg-slate-700"></div>
                             <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Health Score</span>
+                                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">{t('healthScore')}</span>
                                 <div className="flex items-end gap-1">
                                     <span className="text-4xl font-extrabold text-slate-900 dark:text-white leading-none">{dynamicSummary.healthScore}</span>
                                     <span className="text-lg font-bold text-slate-400 pb-0.5">/100</span>
@@ -193,7 +195,7 @@ const Dashboard = () => {
                             </div>
                             <div className="hidden md:block w-px h-12 bg-slate-200 dark:bg-slate-700"></div>
                             <div className="flex flex-col">
-                                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">Based on report dated</span>
+                                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">{t('reportDate')}</span>
                                 <span className="text-lg font-bold text-slate-900 dark:text-slate-200">
                                     {dynamicSummary.reportDate}
                                 </span>
@@ -203,7 +205,7 @@ const Dashboard = () => {
                         {/* Section 2: Your Health Metrics */}
                         {dynamicSummary.metrics && dynamicSummary.metrics.length > 0 && (
                             <div className="mb-10">
-                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Your Health Metrics</h2>
+                                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{t('metrics')}</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                     {dynamicSummary.metrics.map((metric, idx) => (
                                         <HealthMetricCard key={idx} metric={metric} />
@@ -214,7 +216,7 @@ const Dashboard = () => {
 
                         {/* Section 3: Trends Over Time */}
                         <div className="mb-12">
-                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Trends Over Time</h2>
+                            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{t('trends')}</h2>
                             {qualifyingTrends.length > 0 ? (
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                                     {qualifyingTrends.map(([testName, trendsData]) => (
@@ -232,15 +234,15 @@ const Dashboard = () => {
                     /* Empty State for Dynamic Content */
                     <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 rounded-2xl p-8 text-center mb-12">
                         <IconActivity className="mx-auto text-indigo-400 mb-4" size={48} />
-                        <h3 className="text-xl font-bold text-indigo-900 dark:text-indigo-100 mb-2">No Reports Analyzed Yet</h3>
+                        <h3 className="text-xl font-bold text-indigo-900 dark:text-indigo-100 mb-2">{t('noReport')}</h3>
                         <p className="text-indigo-600 dark:text-indigo-300 mb-6 max-w-md mx-auto">
-                            Upload your medical reports and wait for AI analysis to see dynamic health cards and health trends here.
+                            {t('uploadPrompt')}
                         </p>
                         <button 
                             onClick={() => navigate('/reports')}
                             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-xl transition-colors"
                         >
-                            Upload a Report
+                            {t('buttons.upload', { ns: 'common' })}
                         </button>
                     </div>
                 )}
@@ -402,7 +404,7 @@ const Dashboard = () => {
                                             'text-emerald-800 dark:text-emerald-300'
                                         }`}>
                                             {summaryData.latestReport.abnormalValues?.length > 0 
-                                                ? `Abnormal values detected: ${summaryData.latestReport.abnormalValues.join(', ')}.`
+                                                ? `${t('abnormalCount', { count: summaryData.latestReport.abnormalValues.length })}: ${summaryData.latestReport.abnormalValues.join(', ')}.`
                                                 : "All tested values are within normal healthy ranges. Keep it up!"}
                                         </p>
                                         <button onClick={() => navigate(`/report-results/${summaryData.latestReport.id}`)} className={`text-sm font-bold underline decoration-2 underline-offset-4 transition-colors ${
