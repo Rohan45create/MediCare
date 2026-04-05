@@ -1,6 +1,7 @@
 import React from 'react';
 import { IconStethoscope, IconPercentage } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
+import { useTranslateContent } from '../../hooks/useTranslateContent';
 
 export const PossibleCauses = ({ causes }) => {
     const { t } = useTranslation('report');
@@ -34,7 +35,24 @@ export const ConfidenceBreakdown = ({ confidence }) => {
     }
 
     const scoreStr = confData.score?.replace('%', '') || '90';
-    const score = parseInt(scoreStr, 10);
+    let score = parseInt(scoreStr, 10);
+    
+    // Fallback if AI returned NaN or invalid number
+    if (isNaN(score)) {
+        const text = String(confData.explanation || confData.score || '').toLowerCase();
+        if (text.includes('high')) score = 90;
+        else if (text.includes('low')) score = 40;
+        else score = 75; // Medium/default
+    }
+
+    // Determine fallback explanation if confidence is just a string
+    let explanationToTranslate = confData.explanation;
+    if (!explanationToTranslate && typeof confData.score === 'string' && isNaN(parseInt(confData.score.replace('%', ''), 10))) {
+        // If we only have score and it's a long string instead of a percent, it's likely the explanation
+        explanationToTranslate = confData.score;
+    }
+    
+    const translatedExplanation = useTranslateContent(explanationToTranslate);
     
     return (
         <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
@@ -51,9 +69,9 @@ export const ConfidenceBreakdown = ({ confidence }) => {
                 </div>
                 <span className="text-2xl font-black text-slate-800 dark:text-slate-200">{score}%</span>
             </div>
-            {confData.explanation && (
+            {translatedExplanation && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 opacity-90 leading-relaxed">
-                    {confData.explanation}
+                    {translatedExplanation}
                 </p>
             )}
         </div>

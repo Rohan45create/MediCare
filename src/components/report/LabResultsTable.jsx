@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { IconInfoCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
+import { useTranslateContent } from '../../hooks/useTranslateContent';
 
 const LabResultsTable = ({ tests }) => {
     const { t } = useTranslation('report');
     const [hoveredTest, setHoveredTest] = useState(null);
+
+    const stringsToTranslate = tests ? tests.flatMap(tv => [tv.testName || tv.name, tv.meaning]) : [];
+    const translatedStrings = useTranslateContent(stringsToTranslate) || [];
 
     if (!tests || tests.length === 0) return null;
 
@@ -44,7 +48,7 @@ const LabResultsTable = ({ tests }) => {
 
                             return (
                                 <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors group relative">
-                                    <td className="py-4 px-4 font-bold text-slate-900 dark:text-white">{tv.testName || tv.name}</td>
+                                    <td className="py-4 px-4 font-bold text-slate-900 dark:text-white">{translatedStrings[i * 2] || (tv.testName || tv.name)}</td>
                                     <td className={`py-4 px-4 font-extrabold text-lg ${isAbnormal ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300'}`}>
                                         {tv.value}
                                     </td>
@@ -63,13 +67,13 @@ const LabResultsTable = ({ tests }) => {
                                         
                                         {hoveredTest === i && tv.meaning && (
                                             <div className="absolute z-50 left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 bg-slate-900 text-white text-xs rounded-xl p-3 shadow-xl tooltip-arrow">
-                                                {tv.meaning}
+                                                {translatedStrings[i * 2 + 1] || tv.meaning}
                                             </div>
                                         )}
                                     </td>
                                     
                                     <td className="py-4 px-4 text-slate-600 dark:text-slate-400 text-sm max-w-xs truncate">
-                                        {tv.meaning || t('table.standardRange')}
+                                        {translatedStrings[i * 2 + 1] || tv.meaning || t('table.standardRange')}
                                     </td>
                                 </tr>
                             );

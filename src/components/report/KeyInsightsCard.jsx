@@ -1,9 +1,13 @@
 import React from 'react';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
+import { useTranslateContent } from '../../hooks/useTranslateContent';
 
 const KeyInsightsCard = ({ insights }) => {
     const { t } = useTranslation('report');
+    const stringsToTranslate = insights ? insights.flatMap(i => [i.test, i.insight]) : [];
+    const translatedStrings = useTranslateContent(stringsToTranslate) || [];
+
     if (!insights || insights.length === 0) return null;
 
     return (
@@ -33,10 +37,10 @@ const KeyInsightsCard = ({ insights }) => {
                             <span className="text-xl mt-0.5" role="img" aria-label="insight status">{icon}</span>
                             <div>
                                 <h4 className={`font-bold text-sm ${textClass}`}>
-                                    {insight.status} {insight.test}
+                                    {insight.status} {translatedStrings[idx * 2] || insight.test}
                                 </h4>
                                 <p className={`text-sm mt-1 opacity-90 ${textClass}`}>
-                                    {insight.insight}
+                                    {translatedStrings[idx * 2 + 1] || insight.insight}
                                 </p>
                             </div>
                         </div>
