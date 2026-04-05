@@ -50,5 +50,12 @@
   },
   "errors": {
     "queryLimit": "Query length limit exceeded. Max allowed query: 500 chars"
+  },
+  "meter": {
+    "overallSeverity": "Overall Severity",
+    "riskAssessment": "Risk Assessment",
+    "low": "LOW",
+    "med": "MED",
+    "high": "HIGH"
   }
 }

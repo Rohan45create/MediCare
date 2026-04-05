@@ -68,6 +68,12 @@
       "heading": "Newsletter",
       "text": "Stay updated with the latest in AI health tech.",
       "input_placeholder": "Your email"
+    },
+    "legal": {
+      "copyright": "© $YEAR$ MediCare Inc. All rights reserved.",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Settings"
     }
   }
 }
