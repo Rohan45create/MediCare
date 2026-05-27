@@ -2,6 +2,8 @@
 
 MediCare is a preventive healthcare platform designed to help users understand their medical reports, check medicine safety, track health progress, and receive AI-powered health guidance. This repository contains the **React-based frontend** of the application.
 
+Backend Repo: https://github.com/Rohan45create/MediCare-backend 
+
 ---
 
 ## 🌟 Key Features
